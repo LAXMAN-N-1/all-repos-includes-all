@@ -1,0 +1,594 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import {
+    ArrowLeft,
+    Settings,
+    Users,
+    ListTodo,
+    BarChart3,
+
+    Calendar,
+    Eye,
+    EyeOff,
+    Edit,
+    Trash2,
+    UserPlus,
+    MoreVertical,
+    Crown,
+    Shield,
+    User as UserIcon,
+    Loader2,
+    Layers,
+    Book,
+    LayoutGrid,
+    List as ListIcon,
+    Code,
+    CheckSquare,
+    Palette,
+    FileText
+} from 'lucide-react';
+import { cn, getInitials } from '@/lib/utils';
+import { projectsApi, Project } from '@/lib/api/endpoints/projects';
+import { useToast } from '@/components/ui/Toast';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { useAuthStore } from '@/lib/store/authStore';
+import { ProjectBacklog } from '@/components/projects/ProjectBacklog';
+
+const getRoleIcon = (role: string) => {
+    switch (role) {
+        case 'LEAD': return Crown;
+        case 'ADMIN': return Shield;
+        case 'DEVELOPER': return Code;
+        case 'QA_TESTER': return CheckSquare;
+        case 'DESIGNER': return Palette;
+        case 'SCRUM_MASTER': return Users; // Or specialized icon
+        case 'PROJECT_MANAGER': return BarChart3;
+        default: return UserIcon;
+    }
+};
+
+const getRoleColor = (role: string) => {
+    switch (role) {
+        case 'LEAD': return 'text-yellow-600 dark:text-yellow-400';
+        case 'ADMIN': return 'text-purple-600 dark:text-purple-400';
+        case 'DEVELOPER': return 'text-blue-600 dark:text-blue-400';
+        case 'QA_TESTER': return 'text-green-600 dark:text-green-400';
+        case 'DESIGNER': return 'text-pink-600 dark:text-pink-400';
+        case 'SCRUM_MASTER': return 'text-orange-600 dark:text-orange-400';
+        case 'PROJECT_MANAGER': return 'text-indigo-600 dark:text-indigo-400';
+        default: return 'text-gray-600 dark:text-gray-400';
+    }
+};
+
+import { ProjectModal } from '@/components/projects/ProjectModal';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { AddMemberModal } from '@/components/projects/AddMemberModal';
+import { ProjectIssues } from '@/components/projects/ProjectIssues';
+import { ProjectEpics } from '@/components/projects/ProjectEpics';
+import { ProjectFeatures } from '@/components/projects/ProjectFeatures';
+import { ProjectSprints } from '@/components/projects/ProjectSprints';
+
+import { ProjectOverview } from '@/components/projects/ProjectOverview';
+import { ProjectFeedback } from '@/components/projects/ProjectFeedback';
+import { ProjectFileBrowser } from '@/components/projects/ProjectFileBrowser';
+import { ProjectTeam } from '@/components/projects/ProjectTeam';
+import { DailyTracker } from '@/components/projects/DailyTracker';
+import AdminDailyTracker from '@/components/projects/AdminDailyTracker';
+import AdvancedDailyUpdate from '@/components/projects/AdvancedDailyUpdate';
+import { TeamPerformance } from '@/components/projects/TeamPerformance';
+import axios from 'axios';
+
+export default function ProjectDetailsPage() {
+    const params = useParams();
+    const router = useRouter();
+    const { success, error } = useToast();
+    const user = useAuthStore(state => state.user);
+    const role = user?.role || 'EMPLOYEE';
+    const [project, setProject] = useState<Project | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const [activeTab, setActiveTab] = useState<'overview' | 'backlog' | 'epics' | 'features' | 'board' | 'issues' | 'files' | 'team' | 'settings' | 'sprints' | 'feedback' | 'dailyTracker' | 'teamPerformance'>('overview');
+    const [settingsForm, setSettingsForm] = useState({
+        name: '',
+        description: ''
+    });
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+    const showProjectActionError = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err) && err.response?.status === 403) {
+            error('Access denied');
+            return;
+        }
+        error(fallback);
+    };
+
+    useEffect(() => {
+        if (project) {
+            setSettingsForm({
+                name: project.name,
+                description: project.description || ''
+            });
+        }
+    }, [project]);
+
+    const fetchProject = async () => {
+        try {
+            setIsLoading(true);
+            const data = await projectsApi.getById(params.id as string);
+            console.log('Project Details fetched:', {
+                id: data.id,
+                name: data.name,
+                usesEpics: data.usesEpics,
+                usesSprints: data.usesSprints,
+                membersCount: (data as any).members?.length
+            });
+            setProject(data);
+        } catch (err) {
+            console.error('Failed to fetch project:', err);
+            error('Failed to fetch project details');
+            router.push('/dashboard');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (params.id) {
+            fetchProject();
+        }
+    }, [params.id]);
+
+    const handleDeleteProject = async () => {
+        if (!project) return;
+        try {
+            await projectsApi.delete(project.id);
+            success('Project deleted successfully');
+            router.push('/projects');
+        } catch (err) {
+            console.error('Failed to delete project:', err);
+            error('Failed to delete project');
+        }
+    };
+
+    const handleUpdateProject = async (data: any) => {
+        if (!project) return;
+        try {
+            await projectsApi.update(project.id, data);
+            success('Project updated successfully');
+            fetchProject();
+            setIsEditModalOpen(false);
+        } catch (err) {
+            console.error('Failed to update project:', err);
+            showProjectActionError(err, 'Failed to update project');
+            throw err;
+        }
+    };
+
+    const handleAddMember = async (data: { userIds: string[], role: string }) => {
+        if (!project) return;
+        try {
+            await Promise.all(data.userIds.map(userId =>
+                projectsApi.addMember(project.id, userId, data.role)
+            ));
+            success('Members added successfully');
+            fetchProject();
+            setIsAddMemberModalOpen(false);
+        } catch (err) {
+            console.error('Failed to add members:', err);
+            showProjectActionError(err, 'Failed to add members');
+            throw err;
+        }
+    };
+
+    if (isLoading || !project) {
+        return (
+            <div className="flex bg-gray-50 dark:bg-gray-900 h-screen w-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+            </div>
+        );
+    }
+
+    const handleSaveSettings = async () => {
+        try {
+            setIsSavingSettings(true);
+            await projectsApi.update(project.id, settingsForm);
+            success('Project settings updated successfully');
+            fetchProject();
+        } catch (err) {
+            console.error('Failed to update project settings:', err);
+            showProjectActionError(err, 'Failed to update project settings');
+        } finally {
+            setIsSavingSettings(false);
+        }
+    };
+
+
+    // ...
+
+
+
+    let tabs: any[] = [];
+    if (role === 'ADMIN') {
+        tabs = [
+            { id: 'overview', label: 'Overview', icon: BarChart3 },
+            { id: 'backlog', label: 'Planning', icon: ListIcon },
+            ...(project.usesEpics ? [
+                { id: 'epics', label: 'Epics', icon: Layers },
+                { id: 'features', label: 'Features', icon: Book },
+            ] : []),
+            { id: 'issues', label: 'Issues', icon: ListTodo },
+            { id: 'dailyTracker', label: 'Daily Tracker', icon: Calendar },
+            { id: 'files', label: 'Files', icon: FileText },
+            { id: 'board', label: 'Board', icon: LayoutGrid },
+            { id: 'team', label: 'Team', icon: Users },
+            { id: 'teamPerformance', label: 'Performance', icon: BarChart3 },
+        ];
+    } else if (role === 'SCRUM_MASTER') {
+        tabs = [
+            { id: 'overview', label: 'Overview', icon: BarChart3 },
+            { id: 'backlog', label: 'Planning', icon: ListIcon },
+            ...(project.usesEpics ? [
+                { id: 'epics', label: 'Epics', icon: Layers },
+                { id: 'features', label: 'Features', icon: Book },
+            ] : []),
+            ...(project.usesSprints ? [{ id: 'sprints', label: 'Sprints', icon: Calendar }] : []),
+            { id: 'issues', label: 'Issues', icon: ListTodo },
+            { id: 'dailyTracker', label: 'Daily Tracker', icon: Calendar },
+            { id: 'files', label: 'Files', icon: FileText },
+            { id: 'board', label: 'Board', icon: LayoutGrid },
+            { id: 'team', label: 'Team', icon: Users },
+            { id: 'teamPerformance', label: 'Performance', icon: BarChart3 },
+        ];
+    } else if (role === 'CLIENT') {
+        // ... Client tabs same ...
+        tabs = [
+            { id: 'overview', label: 'Overview', icon: BarChart3 },
+            ...(project.usesEpics ? [
+                { id: 'epics', label: 'Epics', icon: Layers },
+                { id: 'features', label: 'Features', icon: Book },
+            ] : []),
+            { id: 'sprints', label: 'Progress', icon: BarChart3 },
+            { id: 'files', label: 'Files', icon: FileText },
+            { id: 'feedback', label: 'Feedback', icon: ListTodo },
+        ];
+    } else if (role === 'PROJECT_MANAGER') {
+        tabs = [
+            { id: 'overview', label: 'Overview', icon: BarChart3 },
+            { id: 'backlog', label: 'Planning', icon: ListIcon },
+            ...(project.usesEpics ? [
+                { id: 'epics', label: 'Epics', icon: Layers },
+                { id: 'features', label: 'Features', icon: Book },
+            ] : []),
+            ...(project.usesSprints ? [{ id: 'sprints', label: 'Sprints', icon: Calendar }] : []),
+            { id: 'issues', label: 'Issues', icon: ListTodo },
+            { id: 'dailyTracker', label: 'Daily Tracker', icon: Calendar },
+            { id: 'files', label: 'Files', icon: FileText },
+            { id: 'board', label: 'Board', icon: LayoutGrid },
+            { id: 'team', label: 'Team', icon: Users },
+            { id: 'teamPerformance', label: 'Performance', icon: BarChart3 },
+        ];
+    } else {
+        // Employee
+        tabs = [
+            { id: 'board', label: 'Board', icon: LayoutGrid },
+            { id: 'issues', label: 'Issues', icon: ListTodo },
+            { id: 'dailyTracker', label: 'Daily Tracker', icon: Calendar },
+            { id: 'files', label: 'Files', icon: FileText },
+        ];
+    }
+
+    // ...
+
+    return (
+        <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+            {/* Header */}
+            <div className="flex flex-col border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 z-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between px-4 md:px-6 py-4 gap-4">
+                    <div className="flex items-start md:items-center space-x-4">
+                        <button
+                            onClick={() => router.push('/projects')}
+                            className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors flex-shrink-0"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <div className="min-w-0">
+                            <div className="flex items-center flex-wrap gap-2">
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate max-w-[200px] md:max-w-md">{project.name}</h1>
+                                <span className={cn(
+                                    "px-2.5 py-0.5 rounded-full text-xs font-medium border flex-shrink-0",
+                                    project.status === 'ACTIVE' ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-600 border-gray-200"
+                                )}>
+                                    {project.status}
+                                </span>
+                            </div>
+                            {project.description && (
+                                <p className="text-sm text-gray-500 mt-1 max-w-full md:max-w-2xl truncate">{project.description}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-end space-x-3 mt-2 md:mt-0">
+                        <button
+                            onClick={() => setActiveTab('team')}
+                            className="p-2 text-gray-400 hover:text-gray-500"
+                            title="Team Members"
+                        >
+                            <Users className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('settings')}
+                            className="p-2 text-gray-400 hover:text-gray-500"
+                            title="Project Settings"
+                        >
+                            <Settings className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div >
+
+                {/* Tabs */}
+                {
+                    activeTab !== 'settings' && (
+                        <div className="px-4 md:px-6 flex space-x-6 overflow-x-auto no-scrollbar pb-1">
+                            {tabs.map((tab: any) => {
+                                const Icon = tab.icon;
+                                const isActive = activeTab === tab.id;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={cn(
+                                            "flex items-center space-x-2 pb-3 border-b-2 text-sm font-medium transition-colors whitespace-nowrap",
+                                            isActive
+                                                ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                        )}
+                                    >
+                                        <Icon className="w-4 h-4" />
+                                        <span>{tab.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )
+                }
+            </div >
+
+            <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+                {activeTab === 'overview' && (
+                    <div className="p-4 md:p-6">
+                        <ProjectOverview projectId={project.id} />
+                    </div>
+                )}
+
+                {
+                    activeTab === 'backlog' && (
+                        <ProjectBacklog projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'sprints' && (
+                        <ProjectSprints projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'epics' && (
+                        <ProjectEpics projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'features' && (
+                        <ProjectFeatures projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'board' && (
+                        <ProjectIssues projectId={project.id} initialView="board" hideViewToggle={true} />
+                    )
+                }
+
+                {
+                    activeTab === 'issues' && (
+                        <ProjectIssues projectId={project.id} initialView="list" hideViewToggle={true} />
+                    )
+                }
+
+                {
+                    activeTab === 'files' && (
+                        <div className="p-4 md:p-6">
+                            <ProjectFileBrowser projectId={project.id} />
+                        </div>
+                    )
+                }
+
+                {
+                    activeTab === 'feedback' && (
+                        <ProjectFeedback projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'team' && (
+                        <ProjectTeam projectId={project.id} onAddMember={() => setIsAddMemberModalOpen(true)} />
+                    )
+                }
+
+                {
+                    activeTab === 'dailyTracker' && (
+                        (role === 'ADMIN' || role === 'PROJECT_MANAGER' || role === 'SCRUM_MASTER')
+                            ? <AdminDailyTracker projectId={project.id} />
+                            : <AdvancedDailyUpdate projectId={project.id} />
+                    )
+                }
+
+                {
+                    activeTab === 'teamPerformance' && (
+                        <div className="p-4 md:p-6">
+                            <TeamPerformance projectId={project.id} />
+                        </div>
+                    )
+                }
+
+                {
+                    activeTab === 'settings' && (
+                        <div className="max-w-2xl space-y-6">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                    Project Settings
+                                </h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Project Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={settingsForm.name}
+                                            onChange={(e) => setSettingsForm({ ...settingsForm, name: e.target.value })}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Description
+                                        </label>
+                                        <textarea
+                                            rows={4}
+                                            value={settingsForm.description}
+                                            onChange={(e) => setSettingsForm({ ...settingsForm, description: e.target.value })}
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-end space-x-3 pt-4">
+                                        <button
+                                            onClick={() => setSettingsForm({ name: project.name, description: project.description || '' })}
+                                            className="px-4 py-2 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleSaveSettings}
+                                            disabled={isSavingSettings}
+                                            className={cn(
+                                                'px-6 py-2 rounded-lg font-medium',
+                                                'bg-gradient-to-r from-primary-500 to-accent-purple',
+                                                'text-white shadow-lg',
+                                                'hover:shadow-glow-purple hover:scale-[1.02]',
+                                                'active:scale-[0.98]',
+                                                'transition-all duration-200',
+                                                isSavingSettings && 'opacity-70 cursor-not-allowed'
+                                            )}
+                                        >
+                                            {isSavingSettings ? (
+                                                <div className="flex items-center">
+                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                    Saving...
+                                                </div>
+                                            ) : 'Save Changes'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 p-6">
+                                <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">
+                                    Danger Zone
+                                </h3>
+                                <p className="text-sm text-red-700 dark:text-red-300 mb-4">
+                                    Once you delete a project, there is no going back. Please be certain.
+                                </p>
+                                <button
+                                    onClick={() => setIsDeleteModalOpen(true)}
+                                    className="flex items-center px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete Project
+                                </button>
+                            </div>
+
+
+                            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                    Client Portal
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                                        <div>
+                                            <h3 className="font-medium text-gray-900 dark:text-white">Client Access</h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                Grant access to external clients. They will only see items marked "Visible to Client".
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                // Reuse add member modal
+                                                setIsAddMemberModalOpen(true);
+                                            }}
+                                            className="px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                                        >
+                                            Manage Access
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50 dark:bg-gray-900/50 opacity-75 cursor-not-allowed">
+                                        <div>
+                                            <h3 className="font-medium text-gray-900 dark:text-white">Show Budget</h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                Allow clients to see project budget and spend [Coming Soon].
+                                            </p>
+                                        </div>
+                                        <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
+                                            <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+            </div >
+
+            {/* Modals */}
+            <ProjectModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSubmit={handleUpdateProject}
+                initialData={project || undefined}
+            />
+
+            {
+                project && (
+                    <ConfirmationModal
+                        isOpen={isDeleteModalOpen}
+                        onClose={() => setIsDeleteModalOpen(false)}
+                        onConfirm={handleDeleteProject}
+                        title="Delete Project"
+                        message={`Are you sure you want to delete "${project.name}"? This action cannot be undone and will delete all associated issues and sprints.`}
+                        confirmText="Delete Project"
+                        variant="danger"
+                    />
+                )
+            }
+
+            {
+                project && (
+                    <AddMemberModal
+                        isOpen={isAddMemberModalOpen}
+                        onClose={() => setIsAddMemberModalOpen(false)}
+                        onSubmit={handleAddMember}
+                        projectId={project.id}
+                    />
+                )
+            }
+        </div >
+    );
+}

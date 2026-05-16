@@ -1,0 +1,42 @@
+# =============================================
+# .gitignore for all-repos-includes-all backup
+# Excludes only regenerable build artifacts
+# Keeps: .env files, docs, configs, source code
+# =============================================
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Flutter / Dart ---
+**/build/
+**/.dart_tool/
+**/.gradle/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ios/Pods/
+**/ios/.symlinks/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# --- Next.js ---
+**/.next/
+
+# --- Large archives (>100MB, exceeds GitHub limit) ---
+prism softwere/frontend/frontend.tar.gz
+prism softwere/source.tar.gz
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+
+# --- IDE (optional, remove if you want these backed up) ---
+# .idea/
+# .vscode/
+# *.swp

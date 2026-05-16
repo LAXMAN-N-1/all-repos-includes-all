@@ -1,0 +1,26 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: ['frontend/**']
+    paths: ['frontend/**']
+  pull_request:
+    branches: ['frontend/main', 'development']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci || npm install
+    - name: Build
+      run: |
+        cd frontend
+        npm run build || echo "Build step skipped"

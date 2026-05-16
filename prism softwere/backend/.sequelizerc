@@ -1,0 +1,12 @@
+const path = require('path');
+const fs = require('fs');
+
+const isProduction = process.env.NODE_ENV === 'production' || fs.existsSync(path.resolve(__dirname, 'dist'));
+const sourceDir = isProduction ? 'dist' : 'src';
+
+module.exports = {
+  'config': path.resolve(sourceDir, 'config', 'config.js'),
+  'models-path': path.resolve(sourceDir, 'models'),
+  'seeders-path': path.resolve('seeders'),
+  'migrations-path': path.resolve('migrations'),
+};

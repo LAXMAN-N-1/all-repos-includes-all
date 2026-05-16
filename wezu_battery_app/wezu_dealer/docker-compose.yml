@@ -1,0 +1,86 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Wezu Dealer Portal — production compose file
+#
+# Usage on the VPS:
+#   cp .env.example .env        # tweak values for this environment
+#   docker compose build        # honours API_BASE_URL build-arg from .env
+#   docker compose up -d
+#   docker compose logs -f web
+#
+# The Flutter web bundle is fully static, so the container only talks to the
+# backend from the user's browser. The API host is baked in at *build* time
+# via --dart-define, which is why API_BASE_URL is a build arg, not a runtime
+# env var. Rebuild the image to point at a different environment.
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: wezu-dealer-portal
+
+services:
+  web:
+    image: ${IMAGE_REPO:-wezutech/dealer-portal}:${IMAGE_TAG:-latest}
+    container_name: wezu-dealer-portal
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        FLUTTER_VERSION: ${FLUTTER_VERSION:-3.41.6}
+        API_BASE_URL:    ${API_BASE_URL:-https://api1.wezutech.com}
+        APP_FLAVOR:      ${APP_FLAVOR:-production}
+        BUILD_NUMBER:    ${BUILD_NUMBER:-0}
+      cache_from:
+        - ${IMAGE_REPO:-wezutech/dealer-portal}:cache
+        - ${IMAGE_REPO:-wezutech/dealer-portal}:latest
+      labels:
+        org.opencontainers.image.version: ${IMAGE_TAG:-latest}
+        org.opencontainers.image.revision: ${GIT_SHA:-unknown}
+
+    restart: unless-stopped
+    init: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wezu-dealer-web.entrypoints=http,https"
+      - "traefik.http.routers.wezu-dealer-web.rule=Host(`${WEB_DOMAIN:-dealer.powerfrill.com}`)"
+      - "traefik.http.routers.wezu-dealer-web.tls=true"
+      - "traefik.http.services.wezu-dealer-web.loadbalancer.server.port=8080"
+
+    # Expose container port to Docker network for reverse proxy (Traefik).
+    expose:
+      - "8080"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    # Hardening
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=64m,mode=1777
+      - /var/run:size=8m,mode=1777
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

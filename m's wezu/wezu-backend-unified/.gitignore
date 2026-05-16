@@ -1,0 +1,71 @@
+# Environment — NEVER commit secrets
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Firebase credentials
+firebase-*.json
+*-firebase-adminsdk-*.json
+google-services.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+wezu_env/
+
+# Local uploads (use S3/CDN in production)
+uploads/
+
+# Logs
+logs/
+*.log
+
+# Database files
+*.db
+*.sqlite
+*_dump.sql
+
+# Generated / cache
+openapi.json
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Apple files
+.DS_Store
+.gsd/
+
+# IDE
+.vscode/
+.idea/
+.gemini/
+.agent/
+walkthrough.md

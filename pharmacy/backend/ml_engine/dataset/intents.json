@@ -1,0 +1,117 @@
+[
+  {
+    "text": "I want to buy Paracetamol",
+    "intent": "ORDER_MEDICINE",
+    "language": "en"
+  },
+  {
+    "text": "Order Dolo 650",
+    "intent": "ORDER_MEDICINE",
+    "language": "en"
+  },
+  {
+    "text": "Mujhe Crocin khareedna hai",
+    "intent": "ORDER_MEDICINE",
+    "language": "hi"
+  },
+  {
+    "text": "Davai order karni hai",
+    "intent": "ORDER_MEDICINE",
+    "language": "hi"
+  },
+  {
+    "text": "Naaku Dolo 650 kavali",
+    "intent": "ORDER_MEDICINE",
+    "language": "te"
+  },
+  {
+    "text": "Manderlunu order cheyyali",
+    "intent": "ORDER_MEDICINE",
+    "language": "te"
+  },
+  {
+    "text": "Enakku Paracetamol venum",
+    "intent": "ORDER_MEDICINE",
+    "language": "ta"
+  },
+  {
+    "text": "I have a fever",
+    "intent": "SYMPTOM_CHECK",
+    "language": "en"
+  },
+  {
+    "text": "My head is aching badly",
+    "intent": "SYMPTOM_CHECK",
+    "language": "en"
+  },
+  {
+    "text": "Mujhe bukhar hai",
+    "intent": "SYMPTOM_CHECK",
+    "language": "hi"
+  },
+  {
+    "text": "Sir dard ho raha hai",
+    "intent": "SYMPTOM_CHECK",
+    "language": "hi"
+  },
+  {
+    "text": "Naaku jvaram vachindi",
+    "intent": "SYMPTOM_CHECK",
+    "language": "te"
+  },
+  {
+    "text": "Thala noppi ga undi",
+    "intent": "SYMPTOM_CHECK",
+    "language": "te"
+  },
+  {
+    "text": "Enakku kaichal adikkudhu",
+    "intent": "SYMPTOM_CHECK",
+    "language": "ta"
+  },
+  {
+    "text": "Where is my order?",
+    "intent": "TRACK_ORDER",
+    "language": "en"
+  },
+  {
+    "text": "Check order status",
+    "intent": "TRACK_ORDER",
+    "language": "en"
+  },
+  {
+    "text": "Mera order kahan hai?",
+    "intent": "TRACK_ORDER",
+    "language": "hi"
+  },
+  {
+    "text": "Na order ekkada undi?",
+    "intent": "TRACK_ORDER",
+    "language": "te"
+  },
+  {
+    "text": "Hello",
+    "intent": "GREETING",
+    "language": "en"
+  },
+  {
+    "text": "Hi",
+    "intent": "GREETING",
+    "language": "en"
+  },
+  {
+    "text": "Namaste",
+    "intent": "GREETING",
+    "language": "hi"
+  },
+  {
+    "text": "Namaskaram",
+    "intent": "GREETING",
+    "language": "te"
+  },
+  {
+    "text": "Vanakkam",
+    "intent": "GREETING",
+    "language": "ta"
+  }
+]

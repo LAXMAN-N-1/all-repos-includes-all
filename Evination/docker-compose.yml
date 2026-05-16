@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: evenation-backend:latest
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app # For development sync if needed, though Dockerfile copies code
+    restart: always
+
+  frontend-customer:
+    build:
+      context: ./frontend-customer
+      args:
+        - API_URL=http://localhost:8000/api # Set this to your production API URL
+    image: evenation-customer-portal:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
+
+networks:
+  default:
+    name: evenation-network

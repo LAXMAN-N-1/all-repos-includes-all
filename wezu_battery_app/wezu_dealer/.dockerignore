@@ -1,0 +1,44 @@
+# VCS
+.git
+.gitignore
+.github
+
+# IDE / editor
+.idea
+.vscode
+*.iml
+.DS_Store
+
+# Flutter / Dart build output (rebuilt inside the image)
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Platform folders not needed for web build
+android/
+ios/
+macos/
+linux/
+windows/
+
+# Test & coverage
+coverage/
+test/
+
+# Local secrets / env
+.env
+.env.*
+!.env.example
+
+# Logs & scratch
+*.log
+analyze_results.txt
+final_sales_analyze.txt
+
+# Docs that bloat context
+README.md
+docs/

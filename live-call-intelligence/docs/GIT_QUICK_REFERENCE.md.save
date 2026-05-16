@@ -1,0 +1,53 @@
+# Git Quick Reference Guide
+
+## 📋 Daily Workflow Commands
+
+### Starting Work
+```bash
+# Switch to your team's main branch
+git checkout backend/main
+
+# Get latest changes
+git pull origin backend/main
+
+# Create new feature branch
+git checkout -b backend/feature/my-feature-name
+```
+
+### During Work
+```bash
+# Check what files changed
+git status
+
+# Stage all changes
+git add .
+
+# Stage specific file
+git add path/to/file.py
+
+# Commit changes
+git commit -m "feat: Description of changes"
+
+# Push to GitHub
+git push origin backend/feature/my-feature-name
+```
+
+### Finishing Work
+```bash
+# Push final changes
+git push origin backend/feature/my-feature-name
+
+# Go to GitHub and create Pull Request
+# Base: backend/main
+# Compare: backend/feature/my-feature-name
+```
+
+---
+
+## 🔄 Common Scenarios
+
+### Update Your Branch with Latest Changes
+```bash
+git checkout backend/main
+git pull origin backend/main
+git

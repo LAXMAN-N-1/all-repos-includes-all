@@ -1,0 +1,118 @@
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, TYPE_CHECKING, List
+from datetime import datetime, UTC
+from enum import Enum
+import uuid
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.return_request import ReturnRequest
+
+class DeliveryType(str, Enum):
+    DEALER_RESTOCK = "dealer_restock"
+    CUSTOMER_DELIVERY = "customer_delivery"
+    REVERSE_LOGISTICS = "reverse_logistics"
+
+class DeliveryStatus(str, Enum):
+    PENDING = "pending"
+    ASSIGNED = "assigned"
+    IN_TRANSIT = "in_transit"
+    DELIVERED = "delivered"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+class BatteryTransfer(SQLModel, table=True):
+    __tablename__ = "battery_transfers"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
+    battery_id: int = Field(foreign_key="batteries.id")
+    
+    from_location_type: str # warehouse, station, dealer
+    from_location_id: int
+    
+    to_location_type: str
+    to_location_id: int
+    
+    status: str = Field(default="pending") # pending, assigned, in_transit, received, cancelled
+    manifest_id: Optional[int] = Field(default=None, foreign_key="logistics_manifests.id")
+    
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    
+    # Relationship
+    manifest: Optional["LogisticsManifest"] = Relationship(back_populates="transfers")
+
+class LogisticsManifest(SQLModel, table=True):
+    __tablename__ = "logistics_manifests"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
+    manifest_number: str = Field(default_factory=lambda: f"MAN-{uuid.uuid4().hex[:8].upper()}", index=True, unique=True)
+    
+    driver_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    vehicle_id: Optional[str] = None
+    
+    status: str = Field(default="draft") # draft, assigned, active, closed
+    
+    transfers: List[BatteryTransfer] = Relationship(back_populates="manifest")
+    
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+# Update Relationship for User
+if TYPE_CHECKING:
+    from app.models.user import User
+    
+class DeliveryOrder(SQLModel, table=True):
+    __tablename__ = "delivery_orders"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
+    
+    # Type & Status
+    order_type: DeliveryType = Field(index=True)
+    status: DeliveryStatus = Field(default=DeliveryStatus.PENDING, index=True)
+    
+    # Location
+    origin_address: str
+    origin_lat: Optional[float] = None
+    origin_lng: Optional[float] = None
+    
+    destination_address: str
+    destination_lat: Optional[float] = None
+    destination_lng: Optional[float] = None
+    
+    # Assignment
+    assigned_driver_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    
+    # Payload
+    battery_ids_json: Optional[str] = None # List of battery IDs being moved
+    
+    # Timings
+    scheduled_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    
+    # Tracking
+    tracking_url: Optional[str] = None
+    proof_of_delivery_url: Optional[str] = None
+    customer_signature_url: Optional[str] = None
+    otp_verified: bool = Field(default=False)
+    completion_otp: Optional[str] = None
+    
+    # Financials
+    total_value: float = Field(default=0.0)
+    
+    # Reverse Logistics Link
+    return_request_id: Optional[int] = Field(default=None, foreign_key="return_requests.id")
+    
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    # Relationships
+    driver: Optional["User"] = Relationship(back_populates="delivery_orders")
+    return_request: Optional["ReturnRequest"] = Relationship(
+        back_populates="delivery_order",
+        sa_relationship_kwargs={"foreign_keys": "[DeliveryOrder.return_request_id]"}
+    )

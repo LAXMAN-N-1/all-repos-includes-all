@@ -1,0 +1,4032 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/burndown/:sprintId",
+    "source": "src/routes/analytics.ts:103",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/burndown/7c3f00cd-f5b0-40ce-9b69-c04b21f0b557",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/burndown/7c3f00cd-f5b0-40ce-9b69-c04b21f0b557",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/analytics/burndown/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/analytics/burndown/58152e85-eeb4-4b61-bb52-e81fc886af75",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/client-stats",
+    "source": "src/routes/analytics.ts:55",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/client-stats",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/client-stats",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/client-stats",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/client-stats",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/dashboard",
+    "source": "src/routes/analytics.ts:27",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/dashboard",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/dashboard",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/dashboard",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/dashboard",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/db",
+    "source": "src/routes/analytics.ts:187",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/db",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/db",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/db",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/db",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/export",
+    "source": "src/routes/analytics.ts:240",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/export",
+      "sampleQuery": {
+        "type": "issues"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/export",
+      "sampleQuery": {
+        "type": "issues"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/analytics/export",
+      "sampleQuery": {
+        "type": "invalid"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/export",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/growth",
+    "source": "src/routes/analytics.ts:205",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/growth",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/growth",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/growth",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/growth",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/personal-stats",
+    "source": "src/routes/analytics.ts:41",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/personal-stats",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/personal-stats",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/personal-stats",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/personal-stats",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/project-health/:projectId",
+    "source": "src/routes/analytics.ts:151",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/project-health/b3e88a50-86c5-4d1c-a4c9-3f9f3b6e0116",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/project-health/b3e88a50-86c5-4d1c-a4c9-3f9f3b6e0116",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/analytics/project-health/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/analytics/project-health/ba5d07d4-835e-493c-8148-e09fe1a8da3b",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/resolution",
+    "source": "src/routes/analytics.ts:219",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/resolution",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/resolution",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/resolution",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/resolution",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/system",
+    "source": "src/routes/analytics.ts:169",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/system",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/system",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/system",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/analytics/system",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/team-performance",
+    "source": "src/routes/analytics.ts:127",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/team-performance",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/team-performance",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/analytics/team-performance",
+      "sampleQuery": {
+        "projectId": "not-a-uuid"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/analytics/team-performance",
+      "sampleQuery": {
+        "projectId": "f733bcf9-16e6-4e9d-b943-83cfaf02f3a5"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/velocity",
+    "source": "src/routes/analytics.ts:79",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/analytics/velocity",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/analytics/velocity",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/analytics/velocity",
+      "sampleQuery": {
+        "projectId": "not-a-uuid"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/analytics/velocity",
+      "sampleQuery": {
+        "projectId": "af66fb7d-dedf-470d-9c27-6c887ffcf067"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/attendance/:id/status",
+    "source": "src/routes/attendanceRoutes.ts:30",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance/94db34cf-6f65-452a-96b6-0e7d2885da66/status",
+      "sampleBody": {
+        "status": "Approved"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/attendance/94db34cf-6f65-452a-96b6-0e7d2885da66/status",
+      "sampleBody": {
+        "status": "Approved"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/attendance/not-a-uuid/status",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/attendance/:id/status",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/attendance/check-in",
+    "source": "src/routes/attendanceRoutes.ts:16",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/attendance/check-in",
+      "sampleBody": {
+        "workLocation": "Office",
+        "notes": "Sweep check-in"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/attendance/check-in",
+      "sampleBody": {
+        "workLocation": "Office",
+        "notes": "Sweep check-in"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/attendance/check-in",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/attendance/check-in",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/attendance/check-out",
+    "source": "src/routes/attendanceRoutes.ts:17",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance/check-out",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/attendance/check-out",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/attendance/check-out",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/attendance/check-out",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance/employee/:userId",
+    "source": "src/routes/attendanceRoutes.ts:21",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance/employee/9c2eaed1-4624-4927-bb65-fa0ef897e099",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/attendance/employee/9c2eaed1-4624-4927-bb65-fa0ef897e099",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/attendance/employee/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/attendance/employee/f0a12a9c-7f3f-418c-ae1b-eabb68a887d6",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance/my-attendance",
+    "source": "src/routes/attendanceRoutes.ts:18",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance/my-attendance",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/attendance/my-attendance",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance/my-attendance",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/attendance/my-attendance",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance",
+    "source": "src/routes/attendanceRoutes.ts:41",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/attendance",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/attendance",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/attendance",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/audit-logs/stats",
+    "source": "src/routes/auditLogs.ts:26",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/audit-logs/stats",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/audit-logs/stats",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/audit-logs/stats",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/audit-logs/stats",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/audit-logs",
+    "source": "src/routes/auditLogs.ts:14",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/audit-logs",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/audit-logs",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/audit-logs",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/audit-logs",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/change-password",
+    "source": "src/routes/auth.ts:56",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/change-password",
+      "sampleBody": {
+        "oldPassword": "password123",
+        "newPassword": "password123"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/auth/change-password",
+      "sampleBody": {
+        "oldPassword": "password123",
+        "newPassword": "password123"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/auth/change-password",
+      "sampleBody": {
+        "oldPassword": "",
+        "newPassword": "short"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/change-password",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/forgot-password",
+    "source": "src/routes/auth.ts:34",
+    "protected": false,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/forgot-password",
+      "sampleBody": {
+        "email": "sweep-a-admin@test.local"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/forgot-password",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/auth/forgot-password",
+      "sampleBody": {
+        "email": "invalid-email"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/forgot-password",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "source": "src/routes/auth.ts:19",
+    "protected": false,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/login",
+      "sampleBody": {
+        "email": "sweep-a-admin@test.local",
+        "password": "password123"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/login",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/auth/login",
+      "sampleBody": {
+        "email": "invalid-email",
+        "password": ""
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/login",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "source": "src/routes/auth.ts:54",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/logout",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/auth/logout",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/logout",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/logout",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "source": "src/routes/auth.ts:55",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/me",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/auth/me",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/me",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/me",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/refresh-token",
+    "source": "src/routes/auth.ts:26",
+    "protected": false,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/refresh-token",
+      "sampleBody": {
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NjBlZDFkMS0zMmI4LTQxOWMtYWE5Yy1iNjMxODRlMzcyNTAiLCJpYXQiOjE3NzI2MzIyOTAsImV4cCI6MTc3MzIzNzA5MH0.gytPL82JGhr0mFd_kTITRNQD-kspGLcbVVHWAvYNg9A"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/refresh-token",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/auth/refresh-token",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/refresh-token",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/reset-password",
+    "source": "src/routes/auth.ts:43",
+    "protected": false,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/auth/reset-password",
+      "sampleBody": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNWUyY2Y4NC1jYjk1LTRjNGYtOTNmMC01NGEzOWJlZjkwMzEiLCJwdXJwb3NlIjoicGFzc3dvcmQtcmVzZXQiLCJpYXQiOjE3NzI2MzIyOTIsImV4cCI6MTc3MjYzNTg5Mn0.SFgOsMZmpco9NKOCRNA_l9YOG-PUSdUc6rYu4b6Ai1g",
+        "newPassword": "password123"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/reset-password",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/auth/reset-password",
+      "sampleBody": {
+        "token": "",
+        "newPassword": "short"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/auth/reset-password",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/pending-actions",
+    "source": "src/routes/client.ts:64",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/pending-actions",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/pending-actions",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/client/pending-actions",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/client/pending-actions",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/activity",
+    "source": "src/routes/client.ts:50",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects/a21e8066-9633-4cfc-bf40-497d28a22226/activity",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/a21e8066-9633-4cfc-bf40-497d28a22226/activity",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/client/projects/not-a-uuid/activity",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/0d2e77bf-730b-4ad1-bfa4-556fe60079f6/activity",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/milestones",
+    "source": "src/routes/client.ts:43",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects/f7cdc195-8aa0-4f1e-8b40-9ee6664fb966/milestones",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/f7cdc195-8aa0-4f1e-8b40-9ee6664fb966/milestones",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/client/projects/not-a-uuid/milestones",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/44cea2fa-62d1-49af-a2fb-53ddeee583e7/milestones",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/tasks",
+    "source": "src/routes/client.ts:36",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects/704c3a7d-de4d-4e35-942e-7c80b682c9d2/tasks",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/704c3a7d-de4d-4e35-942e-7c80b682c9d2/tasks",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/client/projects/not-a-uuid/tasks",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/aa5ee23f-ce74-4190-b39b-3eb243cef314/tasks",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/timeline",
+    "source": "src/routes/client.ts:57",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects/b650bd62-dc5e-4430-8047-6a4d1bf01997/timeline",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/b650bd62-dc5e-4430-8047-6a4d1bf01997/timeline",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/client/projects/not-a-uuid/timeline",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/d3698b96-755e-44f0-ad6b-50cf121fa9f3/timeline",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id",
+    "source": "src/routes/client.ts:29",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects/dd7dfcac-65dd-446e-84b4-91b7e9646ef0",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/dd7dfcac-65dd-446e-84b4-91b7e9646ef0",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/client/projects/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects/ed419e7c-928a-4203-bb53-390215014937",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects",
+    "source": "src/routes/client.ts:22",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/projects",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/client/projects",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/client/projects",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/search",
+    "source": "src/routes/client.ts:16",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/client/search",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/client/search",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/client/search",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/client/search",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/epics/:id/close",
+    "source": "src/routes/epics.ts:48",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/epics/530a66db-0d05-4005-9c5d-07cd47a01533/close",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics/530a66db-0d05-4005-9c5d-07cd47a01533/close",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/epics/not-a-uuid/close",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/epics/3992f686-bd3b-4035-9a0b-6a610964a116/close",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:24",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/epics/34870400-054e-4787-9ac7-0df80348829c",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics/34870400-054e-4787-9ac7-0df80348829c",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/epics/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/epics/6c648cff-245b-42cd-a6aa-880edac8daaf",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:30",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/epics/34b435b8-2e03-439a-9175-10a95f26a72a",
+      "sampleBody": {
+        "name": "Updated epic name"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics/34b435b8-2e03-439a-9175-10a95f26a72a",
+      "sampleBody": {
+        "name": "Updated epic name"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/epics/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/epics/3ff84e4a-45a3-4a03-a4e6-5bd6818ae645",
+      "sampleBody": {
+        "name": "Updated epic name"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:40",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/epics/9843a374-bb2b-413e-827a-32ac3c2a76c4",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics/9843a374-bb2b-413e-827a-32ac3c2a76c4",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/epics/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/epics/cdbc4a30-b971-4f68-bdcc-bcc2a526c82b",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/epics",
+    "source": "src/routes/epics.ts:22",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/epics",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/epics",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/epics",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/epics",
+    "source": "src/routes/epics.ts:12",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/epics",
+      "sampleBody": {
+        "projectId": "61ff09de-9f3d-45c3-b6fe-d909d3b15e7a",
+        "name": "Sweep Epic 1",
+        "ownerId": "3547575c-b565-45e2-88c9-c07f5262c636"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/epics",
+      "sampleBody": {
+        "projectId": "61ff09de-9f3d-45c3-b6fe-d909d3b15e7a",
+        "name": "Sweep Epic 1",
+        "ownerId": "3547575c-b565-45e2-88c9-c07f5262c636"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/epics",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/epics",
+      "sampleBody": {
+        "projectId": "f2dbdce9-aee8-4878-a7a7-83480e73a288",
+        "name": "Sweep Epic 1",
+        "ownerId": "282daaa6-f316-4eb7-a840-716e42918671"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:24",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/features/440bef3f-61c8-4c97-ad0b-d863a6ba3fd5",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/features/440bef3f-61c8-4c97-ad0b-d863a6ba3fd5",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/features/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/features/71054a3a-2371-4a0f-bbfd-29f9186fd074",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:30",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/features/3631fcb4-b8aa-4ed1-be2e-0c9f6abcf695",
+      "sampleBody": {
+        "name": "Updated feature name"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/features/3631fcb4-b8aa-4ed1-be2e-0c9f6abcf695",
+      "sampleBody": {
+        "name": "Updated feature name"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/features/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/features/93edcc16-bdc6-4b1b-ab9a-81601edc162b",
+      "sampleBody": {
+        "name": "Updated feature name"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:40",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/features/bd81d256-931e-46f0-ba72-80e5f83d6a65",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/features/bd81d256-931e-46f0-ba72-80e5f83d6a65",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/features/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/features/c0c691db-eb12-4dea-844c-e2a705525fc1",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/features",
+    "source": "src/routes/features.ts:22",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/features",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/features",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/features",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/features",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/features",
+    "source": "src/routes/features.ts:12",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/features",
+      "sampleBody": {
+        "projectId": "ed37a3e1-c8b4-4f56-a4f9-ee2cf39d5ee1",
+        "name": "Sweep Feature 1",
+        "ownerId": "34122d1c-811a-4ac9-bed4-d5c7f94e337d"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/features",
+      "sampleBody": {
+        "projectId": "ed37a3e1-c8b4-4f56-a4f9-ee2cf39d5ee1",
+        "name": "Sweep Feature 1",
+        "ownerId": "34122d1c-811a-4ac9-bed4-d5c7f94e337d"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/features",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/features",
+      "sampleBody": {
+        "projectId": "7dd750de-f23a-4c88-9f95-e22da3dcfa18",
+        "name": "Sweep Feature 1",
+        "ownerId": "0b438fcc-346a-48ac-9289-0319210fbaa0"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id/children",
+    "source": "src/routes/issues.ts:32",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/fd6d7643-2029-4da4-943d-f7f837f09f41/children",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/fd6d7643-2029-4da4-943d-f7f837f09f41/children",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/children",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/ec8c4406-a23b-4432-a23b-4d99aefea342/children",
+      "error": null
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/issues/:id/client-approval",
+    "source": "src/routes/issues.ts:129",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/16767c3c-66fc-492f-a0ea-5532ec55121a/client-approval",
+      "sampleBody": {
+        "status": "APPROVED",
+        "feedback": "Looks good"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/16767c3c-66fc-492f-a0ea-5532ec55121a/client-approval",
+      "sampleBody": {
+        "status": "APPROVED",
+        "feedback": "Looks good"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/client-approval",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/9d2973bc-f954-42a5-b377-06b21f22fd4f/client-approval",
+      "sampleBody": {
+        "status": "APPROVED",
+        "feedback": "Looks good"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id/history",
+    "source": "src/routes/issues.ts:194",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/30c1648f-f85a-4c02-b13a-e056079ccad6/history",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/30c1648f-f85a-4c02-b13a-e056079ccad6/history",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/history",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/e8f501ae-3c99-41a2-b7d3-064c0845b4de/history",
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/:id/links/:linkId",
+    "source": "src/routes/issues.ts:184",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/aef697d9-80f9-4acb-869e-7522ea99bf81/links/b22c1497-ebf1-4f6b-8c2b-cb6b8f9cb733",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/aef697d9-80f9-4acb-869e-7522ea99bf81/links/b22c1497-ebf1-4f6b-8c2b-cb6b8f9cb733",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/links/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/f37a6b90-3d51-4eb5-b66d-6dd59abbf8cc/links/979e20c5-1622-4969-8a37-307f8bb0075e",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:id/links",
+    "source": "src/routes/issues.ts:175",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/4230eeaf-85b1-42ef-983b-ee40fc29a564/links",
+      "sampleBody": {
+        "targetIssueId": "bc1e9388-8bce-41a4-8e8f-767a2237787e",
+        "type": "RELATES_TO"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/4230eeaf-85b1-42ef-983b-ee40fc29a564/links",
+      "sampleBody": {
+        "targetIssueId": "bc1e9388-8bce-41a4-8e8f-767a2237787e",
+        "type": "RELATES_TO"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/links",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/7a27abde-1db0-49cc-9e80-fd14013fb4b8/links",
+      "sampleBody": {
+        "targetIssueId": "45845159-3e82-4735-998d-9c21b25ebb48",
+        "type": "RELATES_TO"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id/move-to-sprint",
+    "source": "src/routes/issues.ts:66",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/4e75c146-7150-4339-9f0c-1dd1bb6db7c9/move-to-sprint",
+      "sampleBody": {
+        "sprintId": "b92d6428-dd39-4d38-99ab-2b54d8b95496"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/4e75c146-7150-4339-9f0c-1dd1bb6db7c9/move-to-sprint",
+      "sampleBody": {
+        "sprintId": "b92d6428-dd39-4d38-99ab-2b54d8b95496"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/move-to-sprint",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/02cd4016-7eb0-40ce-bba4-20bef47820b1/move-to-sprint",
+      "sampleBody": {
+        "sprintId": "123f746a-0d85-4f47-8113-43dea63a3454"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id/status",
+    "source": "src/routes/issues.ts:117",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/ecb67845-5557-44a5-8a9d-29ebb36c1804/status",
+      "sampleBody": {
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/ecb67845-5557-44a5-8a9d-29ebb36c1804/status",
+      "sampleBody": {
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/status",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/77099bb1-7144-46a0-bbb5-347a1ee7710c/status",
+      "sampleBody": {
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:90",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/3dd3cbf2-6017-4f25-a2f7-98b0f3bcc76e",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/3dd3cbf2-6017-4f25-a2f7-98b0f3bcc76e",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/411cccfd-e608-463d-ba77-924a687f3bd2",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:140",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/84cd98fa-a1cc-4042-a888-8ed844d3e3dd",
+      "sampleBody": {
+        "title": "Updated issue title"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/84cd98fa-a1cc-4042-a888-8ed844d3e3dd",
+      "sampleBody": {
+        "title": "Updated issue title"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/5f5c7502-cfde-4768-960b-a4f12383cb36",
+      "sampleBody": {
+        "title": "Updated issue title"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:147",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/f4b9ad0b-b2ee-480a-b86b-15a912318bf7",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/f4b9ad0b-b2ee-480a-b86b-15a912318bf7",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/653272b6-d274-47e7-bc62-ac07e300a39a",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/attachments",
+    "source": "src/routes/issues.ts:201",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/c8316bd9-942d-4625-8c34-5df33636080f/attachments",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/c8316bd9-942d-4625-8c34-5df33636080f/attachments",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/attachments",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/10b2054b-50f3-4473-a389-3e55f768926a/attachments",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:issueId/comments",
+    "source": "src/routes/issues.ts:154",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/345abf06-f9b0-47e3-8311-b12615be6d33/comments",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/345abf06-f9b0-47e3-8311-b12615be6d33/comments",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/comments",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/2ae13545-3c3b-4db7-9993-a05f162ac152/comments",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/comments",
+    "source": "src/routes/issues.ts:161",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/c196573a-2ad0-427e-93c3-efe7ecf84941/comments",
+      "sampleBody": {
+        "content": "Sweep comment",
+        "isClientVisible": true
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/c196573a-2ad0-427e-93c3-efe7ecf84941/comments",
+      "sampleBody": {
+        "content": "Sweep comment",
+        "isClientVisible": true
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/comments",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/2b604e17-ea3e-4b3b-8cab-c17d662a3a00/comments",
+      "sampleBody": {
+        "content": "Sweep comment",
+        "isClientVisible": true
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/worklog",
+    "source": "src/routes/issues.ts:168",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/a67cc3b3-c679-4515-ad8e-1c447f2ade03/worklog",
+      "sampleBody": {
+        "timeSpent": 1,
+        "date": "2026-03-04T13:52:06.558Z",
+        "description": "Sweep work log"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/a67cc3b3-c679-4515-ad8e-1c447f2ade03/worklog",
+      "sampleBody": {
+        "timeSpent": 1,
+        "date": "2026-03-04T13:52:06.565Z",
+        "description": "Sweep work log"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/not-a-uuid/worklog",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/acf96c6b-9121-425c-8191-265b1b283e37/worklog",
+      "sampleBody": {
+        "timeSpent": 1,
+        "date": "2026-03-04T13:52:06.571Z",
+        "description": "Sweep work log"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/assign-sprint",
+    "source": "src/routes/issues.ts:106",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/assign-sprint",
+      "sampleBody": {
+        "issueIds": [
+          "e9373b66-c523-4fac-8d43-dddc3cab96f0"
+        ],
+        "sprintId": "95a16e10-4660-4a03-b7d8-2ff7df98ec10"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/assign-sprint",
+      "sampleBody": {
+        "issueIds": [
+          "e9373b66-c523-4fac-8d43-dddc3cab96f0"
+        ],
+        "sprintId": "95a16e10-4660-4a03-b7d8-2ff7df98ec10"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/assign-sprint",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/assign-sprint",
+      "sampleBody": {
+        "issueIds": [
+          "953edcaf-cc9a-448b-a339-2466bda95a75"
+        ],
+        "sprintId": "66482cab-083f-4aee-b1ee-071cf7d78530"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/attachments/:id",
+    "source": "src/routes/issues.ts:208",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/attachments/44444444-4444-4444-8444-444444444444",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/attachments/44444444-4444-4444-8444-444444444444",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/attachments/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/attachments/66666666-6666-4666-8666-666666666666",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/create-story",
+    "source": "src/routes/issues.ts:39",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/create-story",
+      "sampleBody": {
+        "projectId": "56879c6d-afd8-4275-9d09-1b83ab207727",
+        "epicId": "9597d9d9-40d2-4196-9a85-f35ab6eb999a",
+        "title": "Story 1",
+        "description": "Story from sweep",
+        "assigneeId": "24c55bd0-39d5-4495-993b-2b64a0e06fe3",
+        "storyPoints": 3
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/create-story",
+      "sampleBody": {
+        "projectId": "56879c6d-afd8-4275-9d09-1b83ab207727",
+        "epicId": "9597d9d9-40d2-4196-9a85-f35ab6eb999a",
+        "title": "Story 1",
+        "description": "Story from sweep",
+        "assigneeId": "24c55bd0-39d5-4495-993b-2b64a0e06fe3",
+        "storyPoints": 3
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/create-story",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/create-story",
+      "sampleBody": {
+        "projectId": "631b4d66-b406-4065-8101-4419dbf220eb",
+        "epicId": "25f774db-7cd3-4248-bca4-6f2d5e8b3c18",
+        "title": "Story 1",
+        "description": "Story from sweep",
+        "assigneeId": "678706d2-c45b-4cf5-8c93-b3f853408678",
+        "storyPoints": 3
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/create-subtask",
+    "source": "src/routes/issues.ts:54",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues/create-subtask",
+      "sampleBody": {
+        "parentId": "c2e045e7-6a76-41c6-99e9-a8f87324c920",
+        "title": "Subtask 1",
+        "description": "Subtask from sweep"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/create-subtask",
+      "sampleBody": {
+        "parentId": "c2e045e7-6a76-41c6-99e9-a8f87324c920",
+        "title": "Subtask 1",
+        "description": "Subtask from sweep"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/create-subtask",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/create-subtask",
+      "sampleBody": {
+        "parentId": "e5acb47d-4652-442f-875a-f870b5b3f737",
+        "title": "Subtask 1",
+        "description": "Subtask from sweep"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/hierarchy/:projectId",
+    "source": "src/routes/issues.ts:25",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/hierarchy/2acef65e-825f-4571-b99a-c13601c9d690",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/hierarchy/2acef65e-825f-4571-b99a-c13601c9d690",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/hierarchy/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/hierarchy/a80254d4-4f15-4681-9ad1-a086d63bf84b",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/my-issues",
+    "source": "src/routes/issues.ts:18",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/my-issues",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/my-issues",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/my-issues",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/issues/my-issues",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/project/:projectId/backlog",
+    "source": "src/routes/issues.ts:83",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues/project/009430d4-7da7-456e-afa7-626477c98048/backlog",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues/project/009430d4-7da7-456e-afa7-626477c98048/backlog",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues/project/not-a-uuid/backlog",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues/project/42e8151b-0a08-4b98-ab5c-9f88f3dd4f32/backlog",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues",
+    "source": "src/routes/issues.ts:76",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/issues",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/issues",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/issues",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues",
+    "source": "src/routes/issues.ts:97",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/issues",
+      "sampleBody": {
+        "projectId": "d13ae6ec-70f0-4085-ae28-ac2ab9c4e3eb",
+        "title": "Sweep Issue 1",
+        "type": "TASK",
+        "priority": "MEDIUM",
+        "assigneeId": "223b5069-5360-4dec-b1f7-73e489bace12",
+        "reporterId": "50457195-5439-482d-96cf-2310675d55c5"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/issues",
+      "sampleBody": {
+        "projectId": "d13ae6ec-70f0-4085-ae28-ac2ab9c4e3eb",
+        "title": "Sweep Issue 1",
+        "type": "TASK",
+        "priority": "MEDIUM",
+        "assigneeId": "223b5069-5360-4dec-b1f7-73e489bace12",
+        "reporterId": "50457195-5439-482d-96cf-2310675d55c5"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/issues",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/issues",
+      "sampleBody": {
+        "projectId": "5803245f-7845-478c-abc9-e993efc6392f",
+        "title": "Sweep Issue 1",
+        "type": "TASK",
+        "priority": "MEDIUM",
+        "assigneeId": "0141cbdf-f743-4541-b309-a3dfb89f69dd",
+        "reporterId": "0825926a-acc4-4306-8fb6-a220028172f1"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/leaves/:id/status",
+    "source": "src/routes/leaveRoutes.ts:27",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves/b205ecca-ae40-4e90-b03e-92afc3492d02/status",
+      "sampleBody": {
+        "status": "Approved"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/leaves/b205ecca-ae40-4e90-b03e-92afc3492d02/status",
+      "sampleBody": {
+        "status": "Approved"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/leaves/not-a-uuid/status",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/leaves/0470cd0c-8ea5-44b1-8d89-0cfbab1e7a0c/status",
+      "sampleBody": {
+        "status": "Approved"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/leaves/apply",
+    "source": "src/routes/leaveRoutes.ts:16",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/leaves/apply",
+      "sampleBody": {
+        "leaveType": "Annual",
+        "startDate": "2026-03-04",
+        "endDate": "2026-03-04",
+        "daysCount": 1,
+        "reason": "Sweep leave request",
+        "contactNumber": "9999999999"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/leaves/apply",
+      "sampleBody": {
+        "leaveType": "Annual",
+        "startDate": "2026-03-04",
+        "endDate": "2026-03-04",
+        "daysCount": 1,
+        "reason": "Sweep leave request",
+        "contactNumber": "9999999999"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/leaves/apply",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/leaves/apply",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves/my-balances",
+    "source": "src/routes/leaveRoutes.ts:18",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves/my-balances",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/leaves/my-balances",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves/my-balances",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/leaves/my-balances",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves/my-leaves",
+    "source": "src/routes/leaveRoutes.ts:17",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves/my-leaves",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/leaves/my-leaves",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves/my-leaves",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/leaves/my-leaves",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves",
+    "source": "src/routes/leaveRoutes.ts:21",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/leaves",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/leaves",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/leaves",
+      "error": null
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/milestones/:id",
+    "source": "src/routes/milestones.ts:36",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/milestones/bb11547a-2aa7-4c7e-845f-b8c07f1f6cba",
+      "sampleBody": {
+        "name": "Updated milestone",
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/milestones/bb11547a-2aa7-4c7e-845f-b8c07f1f6cba",
+      "sampleBody": {
+        "name": "Updated milestone",
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/milestones/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/milestones/4e31559c-717e-4735-934f-afc8c1b780e5",
+      "sampleBody": {
+        "name": "Updated milestone",
+        "status": "IN_PROGRESS"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/milestones/:id",
+    "source": "src/routes/milestones.ts:52",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/milestones/ac790dd2-929e-4400-99a7-a95133f71974",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/milestones/ac790dd2-929e-4400-99a7-a95133f71974",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/milestones/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/milestones/9150d247-e747-4b4e-8190-e2325655e924",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/milestones/projects/:projectId/milestones",
+    "source": "src/routes/milestones.ts:15",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/milestones/projects/8471647b-dc46-40d9-94d2-5fbbd91cd6eb/milestones",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/milestones/projects/8471647b-dc46-40d9-94d2-5fbbd91cd6eb/milestones",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/milestones/projects/not-a-uuid/milestones",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/milestones/projects/0909464e-770d-4684-9fc4-d095ebccf468/milestones",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/milestones/projects/:projectId/milestones",
+    "source": "src/routes/milestones.ts:22",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/milestones/projects/701ce3a9-8d1f-4fb7-ba26-9bf6183dc8c9/milestones",
+      "sampleBody": {
+        "name": "Sweep Milestone 1",
+        "description": "Created by API sweep",
+        "status": "UPCOMING",
+        "dueDate": "2026-03-04T13:52:25.427Z"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/milestones/projects/701ce3a9-8d1f-4fb7-ba26-9bf6183dc8c9/milestones",
+      "sampleBody": {
+        "name": "Sweep Milestone 1",
+        "description": "Created by API sweep",
+        "status": "UPCOMING",
+        "dueDate": "2026-03-04T13:52:25.432Z"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/milestones/projects/not-a-uuid/milestones",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/milestones/projects/f83d4045-3dfd-4278-bcbd-3674276ef507/milestones",
+      "sampleBody": {
+        "name": "Sweep Milestone 1",
+        "description": "Created by API sweep",
+        "status": "UPCOMING",
+        "dueDate": "2026-03-04T13:52:25.437Z"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/notifications/:id/read",
+    "source": "src/routes/notifications.ts:24",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/notifications/fb221967-c7a5-4185-8c63-1de3f69e548d/read",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/notifications/fb221967-c7a5-4185-8c63-1de3f69e548d/read",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/notifications/not-a-uuid/read",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 404,
+      "samplePath": "/api/v1/notifications/259ffc3e-04dc-4ab9-8ef4-79e3ab39a0e1/read",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/notifications/read-all",
+    "source": "src/routes/notifications.ts:19",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/notifications/read-all",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/notifications/read-all",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/notifications/read-all",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/notifications/read-all",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/notifications",
+    "source": "src/routes/notifications.ts:12",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/notifications",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/notifications",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/notifications",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/notifications",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/portal-settings",
+    "source": "src/routes/portalSettings.ts:17",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/portal-settings",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/portal-settings",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/portal-settings",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/portal-settings",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/portal-settings",
+    "source": "src/routes/portalSettings.ts:20",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/portal-settings",
+      "sampleBody": {
+        "clientPortalEnabled": true,
+        "defaultTaskVisibility": false,
+        "allowClientFileUpload": true,
+        "maxFileUploadSizeMB": 10,
+        "emailNotificationsEnabled": true,
+        "requireApprovalForTasks": false
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/portal-settings",
+      "sampleBody": {
+        "clientPortalEnabled": true,
+        "defaultTaskVisibility": false,
+        "allowClientFileUpload": true,
+        "maxFileUploadSizeMB": 10,
+        "emailNotificationsEnabled": true,
+        "requireApprovalForTasks": false
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/portal-settings",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/portal-settings",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id/issues",
+    "source": "src/routes/projects.ts:92",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/2562de34-8609-468a-84de-565acf781a33/issues",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/2562de34-8609-468a-84de-565acf781a33/issues",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/issues",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/e918c915-609e-46de-9c9d-57af1302e8e4/issues",
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id/members/:userId",
+    "source": "src/routes/projects.ts:81",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/1e143b1e-27bf-4141-85e3-20b12475e72a/members/8b7c3237-11d8-4b49-98e4-1c252c94d814",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/1e143b1e-27bf-4141-85e3-20b12475e72a/members/8b7c3237-11d8-4b49-98e4-1c252c94d814",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/members/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/63cbbb75-f49a-4dc4-9880-06b4d9d342b5/members/6152dfa0-a436-46b2-83ef-b546f0745c0c",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id/members",
+    "source": "src/routes/projects.ts:62",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/50544805-3956-4a3f-b4c5-48feaf9843e2/members",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/50544805-3956-4a3f-b4c5-48feaf9843e2/members",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/members",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/00f0edba-3c06-4e47-8bc1-ff321ef3d36f/members",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects/:id/members",
+    "source": "src/routes/projects.ts:69",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/projects/e13a552c-0000-4008-9c38-5e58d989dd2d/members",
+      "sampleBody": {
+        "userId": "73441297-d6b3-4be4-9b26-1d8585476f4a",
+        "role": "MEMBER"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/e13a552c-0000-4008-9c38-5e58d989dd2d/members",
+      "sampleBody": {
+        "userId": "73441297-d6b3-4be4-9b26-1d8585476f4a",
+        "role": "MEMBER"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/members",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/516460ec-a43c-4851-a77e-0b5a42da221a/members",
+      "sampleBody": {
+        "userId": "6c7a132f-6662-42ea-8f84-d38009293245",
+        "role": "MEMBER"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:31",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/49340200-91f1-48ef-8e03-61572d28cef3",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/49340200-91f1-48ef-8e03-61572d28cef3",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/43e336a4-a26d-4c0e-8a66-e40b70d5091e",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:46",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/7484ebb2-a76b-4905-b9d4-30f1353c9c00",
+      "sampleBody": {
+        "name": "Updated Project Name"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/7484ebb2-a76b-4905-b9d4-30f1353c9c00",
+      "sampleBody": {
+        "name": "Updated Project Name"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/c2198ef3-3ff2-4440-a20c-b002f72e05af",
+      "sampleBody": {
+        "name": "Updated Project Name"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:54",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/0a86fe28-af5a-4dbc-b7ea-c50bfa045730",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/0a86fe28-af5a-4dbc-b7ea-c50bfa045730",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/5c597cd5-aebe-46d1-b166-d0722ebaad03",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:projectId/files/:fileId/download",
+    "source": "src/routes/projects.ts:120",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/b3f345d3-ee72-4a40-bc82-472557b57bd8/files/55555555-5555-4555-8555-555555555555/download",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/b3f345d3-ee72-4a40-bc82-472557b57bd8/files/55555555-5555-4555-8555-555555555555/download",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/files/not-a-uuid/download",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/d61e0571-d988-46dd-8aac-bb09346800a7/files/77777777-7777-4777-8777-777777777777/download",
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:projectId/files/:fileId",
+    "source": "src/routes/projects.ts:130",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/79fd29a1-031e-4f3e-a99c-1ac5c2040691/files/55555555-5555-4555-8555-555555555555",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/79fd29a1-031e-4f3e-a99c-1ac5c2040691/files/55555555-5555-4555-8555-555555555555",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/files/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/52ff2254-c7ea-440b-857c-4be656a4e66c/files/77777777-7777-4777-8777-777777777777",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:projectId/files",
+    "source": "src/routes/projects.ts:100",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/7fddc471-a0a5-4b19-b123-6c29e0b332d2/files",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/7fddc471-a0a5-4b19-b123-6c29e0b332d2/files",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/files",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/ac45cb9d-9c37-4adf-80ab-1789e8189fad/files",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects/:projectId/files",
+    "source": "src/routes/projects.ts:110",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/projects/9f548f0a-63e2-47c6-b5df-c56ec7a23110/files",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/9f548f0a-63e2-47c6-b5df-c56ec7a23110/files",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects/not-a-uuid/files",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/projects/4f247f09-d7c5-4c53-ac9d-34f665f21959/files",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/client",
+    "source": "src/routes/projects.ts:24",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/client",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects/client",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/projects/client",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/projects/client",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects",
+    "source": "src/routes/projects.ts:17",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/projects",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/projects",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/projects",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects",
+    "source": "src/routes/projects.ts:38",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/projects",
+      "sampleBody": {
+        "name": "Sweep Project 1",
+        "key": "SP01",
+        "description": "Created by API sweep",
+        "leadId": "c0d36362-956f-40cb-97e4-463470afd4c5",
+        "projectManagerId": "87e9b00a-61c3-4bde-93a7-5258213ebe7c",
+        "scrumMasterId": "577fceb0-38c7-46fa-9df2-da379e3ce7a8",
+        "clientId": "22e7f2c1-f847-43c3-bab3-35ce606cb846",
+        "visibility": "PRIVATE",
+        "usesEpics": true,
+        "usesSprints": true,
+        "type": "SCRUM"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/projects",
+      "sampleBody": {
+        "name": "Sweep Project 1",
+        "key": "SP01",
+        "description": "Created by API sweep",
+        "leadId": "c0d36362-956f-40cb-97e4-463470afd4c5",
+        "projectManagerId": "87e9b00a-61c3-4bde-93a7-5258213ebe7c",
+        "scrumMasterId": "577fceb0-38c7-46fa-9df2-da379e3ce7a8",
+        "clientId": "22e7f2c1-f847-43c3-bab3-35ce606cb846",
+        "visibility": "PRIVATE",
+        "usesEpics": true,
+        "usesSprints": true,
+        "type": "SCRUM"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/projects",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/projects",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/settings/:key",
+    "source": "src/routes/settings.ts:16",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/settings/ui.theme",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/settings/ui.theme",
+      "error": null
+    },
+    "validation": {
+      "status": 404,
+      "samplePath": "/api/v1/settings/invalid key",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/settings/:key",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/settings/:key",
+    "source": "src/routes/settings.ts:19",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/settings/ui.theme",
+      "sampleBody": {
+        "value": {
+          "enabled": true,
+          "updatedAt": "2026-03-04T13:52:47.254Z"
+        },
+        "description": "Updated by API sweep"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/settings/ui.theme",
+      "sampleBody": {
+        "value": {
+          "enabled": true,
+          "updatedAt": "2026-03-04T13:52:47.260Z"
+        },
+        "description": "Updated by API sweep"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/settings/invalid key",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/settings/:key",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/settings/test-email",
+    "source": "src/routes/settings.ts:30",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/settings/test-email",
+      "sampleBody": {
+        "host": "smtp.example.com",
+        "port": 587,
+        "user": "sweep@example.com",
+        "pass": "example-password",
+        "from": "sweep@example.com",
+        "to": "recipient@example.com"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/settings/test-email",
+      "sampleBody": {
+        "host": "smtp.example.com",
+        "port": 587,
+        "user": "sweep@example.com",
+        "pass": "example-password",
+        "from": "sweep@example.com",
+        "to": "recipient@example.com"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/settings/test-email",
+      "sampleBody": {
+        "host": "",
+        "to": "invalid"
+      },
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/settings/test-email",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/settings",
+    "source": "src/routes/settings.ts:13",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/settings",
+      "error": null
+    },
+    "authz": {
+      "status": 403,
+      "samplePath": "/api/v1/settings",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/settings",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/settings",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints/:id/complete",
+    "source": "src/routes/sprints.ts:68",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/7e485e58-c902-4c7e-8aa5-d3a84463877f/complete",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/7e485e58-c902-4c7e-8aa5-d3a84463877f/complete",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/not-a-uuid/complete",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/6e39ccab-0a3f-4f76-8a68-54f06bc159e7/complete",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints/:id/start",
+    "source": "src/routes/sprints.ts:60",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/282dd1ff-8ca2-4d41-9ddd-d0186b24d751/start",
+      "sampleBody": {},
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/282dd1ff-8ca2-4d41-9ddd-d0186b24d751/start",
+      "sampleBody": {},
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/not-a-uuid/start",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/e850c716-c9ac-47aa-902f-729474f7091d/start",
+      "sampleBody": {},
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints/:id/statistics",
+    "source": "src/routes/sprints.ts:46",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/8439b00c-6e34-47bb-a0aa-17cf56b3f5a1/statistics",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/8439b00c-6e34-47bb-a0aa-17cf56b3f5a1/statistics",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/not-a-uuid/statistics",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/8af08953-f0dd-400d-abc7-270acb460336/statistics",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/sprints/:id",
+    "source": "src/routes/sprints.ts:76",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/2e00316e-0e6c-4f8b-a414-ba8cb411884f",
+      "sampleBody": {
+        "name": "Updated sprint name"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/2e00316e-0e6c-4f8b-a414-ba8cb411884f",
+      "sampleBody": {
+        "name": "Updated sprint name"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/ba54f645-2767-4595-9eaa-967f794cc597",
+      "sampleBody": {
+        "name": "Updated sprint name"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/sprints/:id",
+    "source": "src/routes/sprints.ts:84",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/01bd03c2-b225-450c-b70f-7e0a32374f41",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/01bd03c2-b225-450c-b70f-7e0a32374f41",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/288a08fd-d2bc-4931-babc-6d3adb33d663",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints/project/:projectId",
+    "source": "src/routes/sprints.ts:53",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints/project/fcb4f5bb-5f0d-4ca4-8642-80524512e7ae",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints/project/fcb4f5bb-5f0d-4ca4-8642-80524512e7ae",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints/project/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints/project/0bada328-dda0-4304-9a68-5554231fdb83",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints",
+    "source": "src/routes/sprints.ts:40",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/sprints",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/sprints",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints",
+    "source": "src/routes/sprints.ts:32",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/sprints",
+      "sampleBody": {
+        "projectId": "8d56a0b0-2216-49c4-b215-854a7bfee652",
+        "name": "Sweep Sprint 1",
+        "startDate": "2026-03-04T13:52:58.584Z",
+        "endDate": "2026-03-11T13:52:58.584Z",
+        "goal": "Sweep sprint goal"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/sprints",
+      "sampleBody": {
+        "projectId": "8d56a0b0-2216-49c4-b215-854a7bfee652",
+        "name": "Sweep Sprint 1",
+        "startDate": "2026-03-04T13:52:58.591Z",
+        "endDate": "2026-03-11T13:52:58.591Z",
+        "goal": "Sweep sprint goal"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/sprints",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/sprints",
+      "sampleBody": {
+        "projectId": "5fe527d2-c4d3-4226-8f55-9888dd1df4fa",
+        "name": "Sweep Sprint 1",
+        "startDate": "2026-03-04T13:52:58.594Z",
+        "endDate": "2026-03-11T13:52:58.594Z",
+        "goal": "Sweep sprint goal"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:25",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries/1f614ce1-a99b-4870-afe6-42d2478ed83d",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries/1f614ce1-a99b-4870-afe6-42d2478ed83d",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/time/time-entries/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/time/time-entries/8c7d87ff-c55d-4e6a-95a2-b23efd791170",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:30",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries/b09e35aa-f980-484a-be5e-40f6050acd50",
+      "sampleBody": {
+        "timeSpent": 2,
+        "description": "Updated sweep entry"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries/b09e35aa-f980-484a-be5e-40f6050acd50",
+      "sampleBody": {
+        "timeSpent": 2,
+        "description": "Updated sweep entry"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/time/time-entries/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/time/time-entries/974c7be1-7700-4949-a513-dac79365c823",
+      "sampleBody": {
+        "timeSpent": 2,
+        "description": "Updated sweep entry"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:40",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries/12b9c5f2-4f14-4882-92c3-dc26f3476f5c",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries/12b9c5f2-4f14-4882-92c3-dc26f3476f5c",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/time/time-entries/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/time/time-entries/e81c809b-e0b0-478b-bb3b-d79dadb1d061",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries/summary/:period",
+    "source": "src/routes/timeTracking.ts:47",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries/summary/weekly",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries/summary/weekly",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/time/time-entries/summary/bad-period",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/time/time-entries/summary/:period",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries",
+    "source": "src/routes/timeTracking.ts:24",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/time/time-entries",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/time/time-entries",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/time/time-entries",
+    "source": "src/routes/timeTracking.ts:14",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/time/time-entries",
+      "sampleBody": {
+        "issueId": "34845847-0cd9-49f1-8067-aa6e065f50db",
+        "timeSpent": 1.5,
+        "date": "2026-03-04T13:53:04.771Z",
+        "description": "Sweep time entry"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/time/time-entries",
+      "sampleBody": {
+        "issueId": "34845847-0cd9-49f1-8067-aa6e065f50db",
+        "timeSpent": 1.5,
+        "date": "2026-03-04T13:53:04.778Z",
+        "description": "Sweep time entry"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/time/time-entries",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/time/time-entries",
+      "sampleBody": {
+        "issueId": "b3206f0d-d082-4845-9113-12dc61f5cf37",
+        "timeSpent": 1.5,
+        "date": "2026-03-04T13:53:04.781Z",
+        "description": "Sweep time entry"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/:id/activity",
+    "source": "src/routes/users.ts:91",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/229f3150-3a60-4c2d-bb19-db819effab03/activity",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/229f3150-3a60-4c2d-bb19-db819effab03/activity",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/not-a-uuid/activity",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/users/0bbc7067-6617-4c55-a2e7-61c6784c8d12/activity",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/:id/change-password",
+    "source": "src/routes/users.ts:98",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/c91ecd79-f47f-49ff-b1e7-0b0a6b7e9b89/change-password",
+      "sampleBody": {
+        "currentPassword": "password123",
+        "newPassword": "password123"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/c91ecd79-f47f-49ff-b1e7-0b0a6b7e9b89/change-password",
+      "sampleBody": {
+        "currentPassword": "password123",
+        "newPassword": "password123"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/not-a-uuid/change-password",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/users/a80bb329-58b6-43ec-a4c7-cb4f940ee052/change-password",
+      "sampleBody": {
+        "currentPassword": "password123",
+        "newPassword": "password123"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:30",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/e4b6846b-c81d-42ac-8840-1df7a4187766",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/e4b6846b-c81d-42ac-8840-1df7a4187766",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/users/a804ad43-7e43-45c8-af89-61122d5576c4",
+      "error": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:76",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/0a21fcc3-39d1-4673-885d-97152d99ff62",
+      "sampleBody": {
+        "firstName": "Updated",
+        "lastName": "User"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/0a21fcc3-39d1-4673-885d-97152d99ff62",
+      "sampleBody": {
+        "firstName": "Updated",
+        "lastName": "User"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/not-a-uuid",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/users/0a92e82c-d0e5-4717-8599-657ad84177dc",
+      "sampleBody": {
+        "firstName": "Updated",
+        "lastName": "User"
+      },
+      "error": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:83",
+    "protected": true,
+    "crossOrgApplicable": true,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/08629c3f-c713-4750-adc4-53299c19d6af",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/08629c3f-c713-4750-adc4-53299c19d6af",
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/not-a-uuid",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 403,
+      "samplePath": "/api/v1/users/d3408b86-151e-44e7-b573-fa0fc539487a",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/bulk",
+    "source": "src/routes/users.ts:37",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/bulk",
+      "sampleBody": {
+        "users": [
+          {
+            "email": "bulk-1772632391021-1@test.local",
+            "firstName": "Bulk",
+            "lastName": "User"
+          }
+        ]
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/bulk",
+      "sampleBody": {
+        "users": [
+          {
+            "email": "bulk-1772632391101-2@test.local",
+            "firstName": "Bulk",
+            "lastName": "User"
+          }
+        ]
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/bulk",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/users/bulk",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/bulk-action",
+    "source": "src/routes/users.ts:50",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/bulk-action",
+      "sampleBody": {
+        "userIds": [
+          "ed46e5b1-4736-469c-874c-b33ef18a4034"
+        ],
+        "action": "ACTIVATE"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/bulk-action",
+      "sampleBody": {
+        "userIds": [
+          "ed46e5b1-4736-469c-874c-b33ef18a4034"
+        ],
+        "action": "ACTIVATE"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users/bulk-action",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/users/bulk-action",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/export",
+    "source": "src/routes/users.ts:16",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users/export",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users/export",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/users/export",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/users/export",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users",
+    "source": "src/routes/users.ts:23",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1/users",
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1/users",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/users",
+      "error": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users",
+    "source": "src/routes/users.ts:61",
+    "protected": true,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 201,
+      "samplePath": "/api/v1/users",
+      "sampleBody": {
+        "email": "user-1772632395247-3@test.local",
+        "password": "password123",
+        "firstName": "Sweep",
+        "lastName": "User",
+        "role": "EMPLOYEE"
+      },
+      "error": null
+    },
+    "authz": {
+      "status": 401,
+      "samplePath": "/api/v1/users",
+      "sampleBody": {
+        "email": "user-1772632395328-4@test.local",
+        "password": "password123",
+        "firstName": "Sweep",
+        "lastName": "User",
+        "role": "EMPLOYEE"
+      },
+      "error": null
+    },
+    "validation": {
+      "status": 400,
+      "samplePath": "/api/v1/users",
+      "sampleBody": {},
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1/users",
+      "error": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1",
+    "source": "src/routes/index.ts:43",
+    "protected": false,
+    "crossOrgApplicable": false,
+    "happy": {
+      "status": 200,
+      "samplePath": "/api/v1",
+      "error": null
+    },
+    "authz": {
+      "status": 0,
+      "samplePath": "/api/v1",
+      "error": null
+    },
+    "validation": {
+      "status": 200,
+      "samplePath": "/api/v1",
+      "error": null
+    },
+    "crossOrg": {
+      "status": 0,
+      "samplePath": "/api/v1",
+      "error": null
+    }
+  }
+]

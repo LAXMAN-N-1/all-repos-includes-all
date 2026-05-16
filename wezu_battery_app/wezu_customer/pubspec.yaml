@@ -1,0 +1,116 @@
+name: wezu_customer_app
+description: Wezu Battery Rental Customer App
+publish_to: 'none'
+version: 4.0.0+4
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Icons
+  cupertino_icons: ^1.0.2
+  google_fonts: ^8.0.2
+  flutter_svg: ^2.0.9
+  lottie: ^3.3.2
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.0
+  
+  # State Management
+  provider: ^6.1.1
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.7.2
+  
+  # Icons
+  lucide_icons: ^0.257.0
+  
+  # HTTP & API
+  dio: ^5.4.0
+  pretty_dio_logger: ^1.3.1
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^10.0.0
+  
+  # Maps & Location
+  google_maps_flutter: ^2.14.2
+  google_maps_flutter_web: ^0.5.11
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  location: ^8.0.1
+  flutter_polyline_points: ^3.1.0
+  google_maps_cluster_manager_2: ^3.2.0
+  # Firebase
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.1.1
+  firebase_analytics: ^12.1.2
+
+  # QR & Camera
+  mobile_scanner: ^7.2.0
+  qr_flutter: ^4.1.0
+  image_picker: ^1.0.5
+  local_auth: ^3.0.1
+  device_info_plus: ^10.1.0
+
+  # Payments
+  razorpay_flutter: ^1.3.6
+
+  # Utils
+  intl: ^0.20.2
+  url_launcher: ^6.3.2
+  path_provider: ^2.1.1
+  permission_handler: ^12.0.1
+  open_filex: ^4.7.0
+  share_plus: any
+  # Social Sign-in
+  google_sign_in: ^6.3.0
+  sign_in_with_apple: ^7.0.1
+
+  # UI Components
+  pinput: ^6.0.2
+
+  # Animations
+  animations: ^2.0.11
+  flutter_animate: ^4.3.0
+
+  # Forms & Validation
+  email_validator: ^3.0.0
+
+  # WebSocket
+  web_socket_channel: ^3.0.3
+  fl_chart: ^1.1.1
+  url_launcher_android: ^6.3.28
+  url_launcher_ios: ^6.3.6
+  uuid: ^4.5.3
+  flutter_image_compress: ^2.1.0
+  supabase_flutter: ^2.12.4
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logos/app_icon.png"
+  min_sdk_android: 21
+
+dependency_overrides:
+  # path_provider_foundation 2.6.0 requires objective_c 9.x which has a
+  # native build hook that fails on Windows paths with spaces.
+  # Pinning it to 2.4.0 avoids this entirely.
+  path_provider_foundation: 2.4.0
+
+# No overrides
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/images/stations/
+    - assets/icons/
+    - assets/animations/
+    - assets/logos/

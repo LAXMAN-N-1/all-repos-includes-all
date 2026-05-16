@@ -1,0 +1,33 @@
+# Default owners for everything
+   * @live-call-intelligence-team/tech-leads
+   
+   # Backend code
+   /backend/ @live-call-intelligence-team/backend-team
+   /backend/src/ @live-call-intelligence-team/backend-team @live-call-intelligence-team/tech-leads
+   /backend/tests/ @live-call-intelligence-team/backend-team
+   
+   # Frontend code
+   /frontend/ @live-call-intelligence-team/frontend-team
+   /frontend/src/ @live-call-intelligence-team/frontend-team @live-call-intelligence-team/tech-leads
+   
+   # AI/ML code
+   /ai-ml/ @live-call-intelligence-team/ai-ml-team
+   /ai-ml/models/ @live-call-intelligence-team/ai-ml-team @live-call-intelligence-team/tech-leads
+   /ai-ml/training/ @live-call-intelligence-team/ai-ml-team
+   
+   # Mobile code
+   /mobile/ @live-call-intelligence-team/mobile-team
+   /mobile/lib/ @live-call-intelligence-team/mobile-team @live-call-intelligence-team/tech-leads
+   
+   # Audio processing
+   /audio-processing/ @live-call-intelligence-team/audio-team
+   /audio-processing/src/ @live-call-intelligence-team/audio-team @live-call-intelligence-team/tech-leads
+   
+   # DevOps
+   /devops/ @live-call-intelligence-team/devops-team
+   /devops/kubernetes/ @live-call-intelligence-team/devops-team @live-call-intelligence-team/tech-leads
+   /.github/workflows/ @live-call-intelligence-team/devops-team
+   
+   # Documentation
+   /docs/ @live-call-intelligence-team/tech-leads
+   README.md @live-call-intelligence-team/tech-leads

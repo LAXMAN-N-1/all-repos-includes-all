@@ -1,0 +1,239 @@
+version: '3.8'
+
+# ConversaGraph AI - Complete Docker Compose Configuration
+# Run: docker-compose up -d
+
+services:
+  # ==================== NEO4J GRAPH DATABASE ====================
+  neo4j:
+    image: neo4j:5.15-enterprise
+    container_name: conversagraph-neo4j
+    ports:
+      - "7474:7474"  # HTTP Browser UI
+      - "7687:7687"  # Bolt Protocol
+    environment:
+      - NEO4J_AUTH=neo4j/password123
+      - NEO4J_dbms_memory_heap_max__size=4G
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      - NEO4J_dbms_security_procedures_unrestricted=gds.*,apoc.*
+      - NEO4J_dbms_security_procedures_allowlist=gds.*,apoc.*
+      # Enable Graph Data Science
+      - NEO4JLABS_PLUGINS=["graph-data-science", "apoc"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ==================== REDIS CACHE ====================
+  redis:
+    image: redis:7-alpine
+    container_name: conversagraph-redis
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server 
+      --appendonly yes 
+      --requirepass redis123
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ==================== POSTGRESQL DATABASE ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: conversagraph-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: conversagraph
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: conversagraph_metadata
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U conversagraph"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ==================== APACHE KAFKA - ZOOKEEPER ====================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: conversagraph-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== APACHE KAFKA ====================
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: conversagraph-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== REDIS COMMANDER (UI) ====================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: conversagraph-redis-ui
+    depends_on:
+      - redis
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:redis123
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== ELASTICSEARCH (Optional) ====================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: conversagraph-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== KIBANA (Optional) ====================
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: conversagraph-kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== PROMETHEUS (Monitoring) ====================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: conversagraph-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+  # ==================== GRAFANA (Dashboards) ====================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: conversagraph-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - conversagraph-network
+    restart: unless-stopped
+
+# ==================== VOLUMES ====================
+volumes:
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  neo4j_plugins:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# ==================== NETWORKS ====================
+networks:
+  conversagraph-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+# ==================== USAGE INSTRUCTIONS ====================
+# Start all services:     docker-compose up -d
+# Stop all services:      docker-compose down
+# View logs:              docker-compose logs -f
+# Restart service:        docker-compose restart <service-name>
+# Scale service:          docker-compose up -d --scale <service>=<count>
+#
+# Access Points:
+# - Neo4j Browser:        http://localhost:7474
+# - Redis Commander:      http://localhost:8081
+# - Elasticsearch:        http://localhost:9200
+# - Kibana:               http://localhost:5601
+# - Prometheus:           http://localhost:9090
+# - Grafana:              http://localhost:3001

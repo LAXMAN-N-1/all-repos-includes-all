@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5.14-community
+    container_name: call-intel-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/CallIntel123!
+      - NEO4J_PLUGINS=["graph-data-science"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    networks:
+      - call-intel-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: call-intel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - call-intel-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: call-intel-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - call-intel-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: call-intel-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - call-intel-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: call-intel-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: call_intelligence
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Admin123!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - call-intel-network
+
+  adminer:
+    image: adminer:latest
+    container_name: call-intel-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - call-intel-network
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  redis_data:
+  postgres_data:
+
+networks:
+  call-intel-network:
+    driver: bridge

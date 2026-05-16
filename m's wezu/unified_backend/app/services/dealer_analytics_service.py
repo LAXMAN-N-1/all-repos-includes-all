@@ -1,0 +1,640 @@
+"""
+Dealer Analytics Service — Performance overview, trends, station metrics,
+customer insights, peak hours, and export.
+"""
+
+import csv
+import io
+import logging
+from datetime import datetime, UTC, timedelta, date
+from typing import Dict, Any, List, Optional
+
+from sqlmodel import Session, select, func, col
+
+from app.models.swap import SwapSession
+from app.models.station import Station, StationSlot
+from app.models.commission import CommissionLog
+
+logger = logging.getLogger(__name__)
+
+
+class DealerAnalyticsService:
+
+    # ─── 1. Performance Overview ───
+
+    @staticmethod
+    def get_overview(db: Session, dealer_id: int) -> dict:
+        """
+        Returns: swap counts (today/month), revenue, avg rating,
+        active batteries, and station count.
+        """
+        now = datetime.now(UTC)
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        # Dealer's station IDs
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+
+        # Swap counts
+        swaps_today = 0
+        swaps_month = 0
+        revenue_month = 0.0
+        if station_ids:
+            swaps_today = db.exec(
+                select(func.count(SwapSession.id)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= today_start,
+                )
+            ).one() or 0
+
+            swaps_month = db.exec(
+                select(func.count(SwapSession.id)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= month_start,
+                )
+            ).one() or 0
+
+            revenue_month = db.exec(
+                select(func.coalesce(func.sum(SwapSession.swap_amount), 0.0)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= month_start,
+                )
+            ).one() or 0.0
+
+            # Previous month for deltas
+            prev_month_start = (month_start - timedelta(days=1)).replace(day=1)
+            revenue_prev_month = db.exec(
+                select(func.coalesce(func.sum(SwapSession.swap_amount), 0.0)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= prev_month_start,
+                    SwapSession.created_at < month_start,
+                )
+            ).one() or 0.0
+
+
+        # Average station rating
+        avg_rating = db.exec(
+            select(func.coalesce(func.avg(Station.rating), 0.0)).where(
+                Station.dealer_id == dealer_id,
+            )
+        ).one() or 0.0
+
+        # Customer rating distribution
+        rating_dist = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}
+        if station_ids:
+            from app.models.review import Review
+            ratings = db.exec(
+                select(Review.rating, func.count()).where(
+                    col(Review.station_id).in_(station_ids),
+                    Review.rating.isnot(None)
+                ).group_by(Review.rating)
+            ).all()
+            for r_val, count in ratings:
+                # Assuming ratings are 1 to 5
+                str_val = str(int(r_val))
+                if str_val in rating_dist:
+                    rating_dist[str_val] = count
+
+        # Active batteries in slots
+        active_batteries = 0
+        if station_ids:
+            active_batteries = db.exec(
+                select(func.count(StationSlot.id)).where(
+                    col(StationSlot.station_id).in_(station_ids),
+                    StationSlot.battery_id.isnot(None),
+                )
+            ).one() or 0
+
+        # Station count
+        station_count = len(station_ids)
+
+        return {
+            "swaps_today": swaps_today,
+            "swaps_month": swaps_month,
+            "revenue_month": round(float(revenue_month), 2),
+            "revenue_prev_month": round(float(revenue_prev_month) if station_ids else 0.0, 2),
+            "avg_rating": round(float(avg_rating), 2),
+            "rating_distribution": rating_dist,
+            "active_batteries": active_batteries,
+            "station_count": station_count,
+            "timestamp": now.isoformat(),
+        }
+
+    @staticmethod
+    def get_revenue_breakdown(db: Session, dealer_id: int, period: str = "month") -> dict:
+        """Returns revenue split by type (Rentals, Commissions, Refunds) for Stacked Bar Charts."""
+        now = datetime.now(UTC)
+        if period == "today":
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif period == "week":
+            start_date = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+        else: # month
+            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        
+        rental_income = 0.0
+        if station_ids:
+            # Using SwapSession amount as proxy for rental income here, or use Rental table
+            from app.models.rental import Rental
+            rental_income = db.exec(
+                select(func.coalesce(func.sum(Rental.total_amount), 0.0))
+                .where(col(Rental.start_station_id).in_(station_ids))
+                .where(Rental.created_at >= start_date)
+            ).one() or 0.0
+            
+        commission = db.exec(
+            select(func.coalesce(func.sum(CommissionLog.amount), 0.0))
+            .where(CommissionLog.dealer_id == dealer_id)
+            .where(CommissionLog.created_at >= start_date)
+        ).one() or 0.0
+        
+        return {
+            "rental_income": round(float(rental_income), 2),
+            "commission": round(float(commission), 2),
+            "refunds": 0.0, # Placeholder for future refund table
+            "bonuses": 0.0  # Placeholder for future bonuses
+        }
+
+    # ─── 2. Trends ───
+
+    @staticmethod
+    def get_trends(
+        db: Session, dealer_id: int, period: str = "daily", num_periods: int = 7,
+        end_date: Optional[datetime] = None
+    ) -> List[dict]:
+        """Revenue + swap volume trends for the last N periods."""
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        if not station_ids:
+            return []
+
+        now = end_date or datetime.now(UTC)
+        trends = []
+
+        for i in range(num_periods - 1, -1, -1):  # oldest first
+            if period == "daily":
+                start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
+                end = start + timedelta(days=1)
+                label = start.strftime("%Y-%m-%d")
+            elif period == "weekly":
+                start = (now - timedelta(weeks=i)).replace(hour=0, minute=0, second=0, microsecond=0)
+                start = start - timedelta(days=start.weekday())  # Monday
+                end = start + timedelta(weeks=1)
+                label = f"W{start.isocalendar().week} {start.year}"
+            else:  # monthly
+                month_offset = now.month - i
+                year = now.year
+                while month_offset < 1:
+                    month_offset += 12
+                    year -= 1
+                start = datetime(year, month_offset, 1)
+                if month_offset == 12:
+                    end = datetime(year + 1, 1, 1)
+                else:
+                    end = datetime(year, month_offset + 1, 1)
+                label = start.strftime("%Y-%m")
+
+            swaps = db.exec(
+                select(func.count(SwapSession.id)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= start,
+                    SwapSession.created_at < end,
+                )
+            ).one() or 0
+
+            revenue = db.exec(
+                select(func.coalesce(func.sum(SwapSession.swap_amount), 0.0)).where(
+                    col(SwapSession.station_id).in_(station_ids),
+                    SwapSession.status == "completed",
+                    SwapSession.created_at >= start,
+                    SwapSession.created_at < end,
+                )
+            ).one() or 0.0
+
+            trends.append({
+                "period": label,
+                "swaps": swaps,
+                "revenue": round(float(revenue), 2),
+            })
+
+        return trends
+
+    @staticmethod
+    def get_comparison_trends(
+        db: Session, dealer_id: int, period: str = "daily", num_periods: int = 7
+    ) -> List[dict]:
+        """Revenue + swap volume trends for current period vs previous period."""
+        current_trends = DealerAnalyticsService.get_trends(db, dealer_id, period, num_periods)
+        
+        now = datetime.now(UTC)
+        if period == "daily":
+            prev_end = now - timedelta(days=num_periods)
+        elif period == "weekly":
+            prev_end = now - timedelta(weeks=num_periods)
+        else:
+            month_offset = now.month - num_periods
+            year = now.year
+            while month_offset < 1:
+                month_offset += 12
+                year -= 1
+            # Just approximation for rolling month shift
+            prev_end = datetime(year, month_offset, now.day if now.day <= 28 else 28)
+            
+        prev_trends = DealerAnalyticsService.get_trends(db, dealer_id, period, num_periods, end_date=prev_end)
+        
+        comparison = []
+        for i in range(len(current_trends)):
+            curr = current_trends[i]
+            prev = prev_trends[i] if i < len(prev_trends) else {"swaps": 0, "revenue": 0.0}
+            comparison.append({
+                "period": curr["period"],
+                "swaps": curr["swaps"],
+                "revenue": curr["revenue"],
+                "prev_swaps": prev["swaps"],
+                "prev_revenue": prev["prev_revenue"] if "prev_revenue" in prev else prev["revenue"]
+            })
+        return comparison
+
+    # ─── 3. Station Metrics ───
+
+    @staticmethod
+    def get_station_metrics(db: Session, dealer_id: int) -> List[dict]:
+        """Per-station: swaps, revenue, utilization %, rating."""
+        stations = db.exec(
+            select(Station).where(Station.dealer_id == dealer_id)
+        ).all()
+
+        if not stations:
+            return []
+
+        now = datetime.now(UTC)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        station_ids = [s.id for s in stations]
+
+        # Batch: swaps per station this month
+        swap_counts = db.exec(
+            select(SwapSession.station_id, func.count(SwapSession.id))
+            .where(
+                SwapSession.station_id.in_(station_ids),
+                SwapSession.status == "completed",
+                SwapSession.created_at >= month_start,
+            )
+            .group_by(SwapSession.station_id)
+        ).all()
+        swap_map = {row[0]: row[1] for row in swap_counts}
+
+        # Batch: revenue per station this month
+        revenue_rows = db.exec(
+            select(SwapSession.station_id, func.coalesce(func.sum(SwapSession.swap_amount), 0.0))
+            .where(
+                SwapSession.station_id.in_(station_ids),
+                SwapSession.status == "completed",
+                SwapSession.created_at >= month_start,
+            )
+            .group_by(SwapSession.station_id)
+        ).all()
+        revenue_map = {row[0]: row[1] for row in revenue_rows}
+
+        # Batch: occupied slots per station
+        occupied_rows = db.exec(
+            select(StationSlot.station_id, func.count(StationSlot.id))
+            .where(
+                StationSlot.station_id.in_(station_ids),
+                StationSlot.battery_id.isnot(None),
+            )
+            .group_by(StationSlot.station_id)
+        ).all()
+        occupied_map = {row[0]: row[1] for row in occupied_rows}
+
+        # Batch: avg battery health per station
+        from app.models.battery import Battery
+        health_rows = db.exec(
+            select(StationSlot.station_id, func.coalesce(func.avg(Battery.health_percentage), 0.0))
+            .join(Battery, StationSlot.battery_id == Battery.id)
+            .where(StationSlot.station_id.in_(station_ids))
+            .group_by(StationSlot.station_id)
+        ).all()
+        health_map = {row[0]: row[1] for row in health_rows}
+
+        metrics = []
+        for s in stations:
+            swaps = swap_map.get(s.id, 0)
+            revenue = revenue_map.get(s.id, 0.0)
+            occupied = occupied_map.get(s.id, 0)
+            utilization = (occupied / s.total_slots * 100) if s.total_slots > 0 else 0.0
+            avg_health = health_map.get(s.id, 0.0)
+
+            metrics.append({
+                "station_id": s.id,
+                "station_name": s.name,
+                "swaps_month": swaps,
+                "revenue_month": round(float(revenue), 2),
+                "utilization_pct": round(utilization, 1),
+                "health_score_pct": round(float(avg_health), 1),
+                "rating": s.rating,
+                "total_slots": s.total_slots,
+                "status": s.status,
+            })
+
+        return metrics
+
+    # ─── 4. Customer Insights ───
+
+    @staticmethod
+    def get_customer_insights(db: Session, dealer_id: int) -> dict:
+        """Repeat %, new customers, avg CLV, churn rate estimate."""
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        if not station_ids:
+            return {
+                "total_unique_customers": 0,
+                "repeat_customer_pct": 0.0,
+                "new_customers_month": 0,
+                "avg_customer_lifetime_value": 0.0,
+                "churn_rate_pct": 0.0,
+            }
+
+        now = datetime.now(UTC)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        prev_month_start = (month_start - timedelta(days=1)).replace(day=1)
+
+        # All unique customers
+        all_customers = db.exec(
+            select(SwapSession.user_id).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+            ).distinct()
+        ).all()
+        total = len(all_customers)
+
+        # Repeat: customers with > 1 swap
+        from sqlalchemy import literal_column
+        repeat_subq = (
+            select(SwapSession.user_id).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+            )
+            .group_by(SwapSession.user_id)
+            .having(func.count(SwapSession.id) > 1)
+        )
+        repeat_users = db.exec(select(func.count()).select_from(repeat_subq.subquery())).one() or 0
+        repeat_pct = (repeat_users / total * 100) if total > 0 else 0.0
+
+        # New this month
+        prev_customers = set(db.exec(
+            select(SwapSession.user_id).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+                SwapSession.created_at < month_start,
+            ).distinct()
+        ).all())
+
+        current_customers = set(db.exec(
+            select(SwapSession.user_id).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+                SwapSession.created_at >= month_start,
+            ).distinct()
+        ).all())
+
+        new_customers = len(current_customers - prev_customers)
+
+        # Avg CLV (total revenue / unique customers)
+        total_revenue = db.exec(
+            select(func.coalesce(func.sum(SwapSession.swap_amount), 0.0)).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+            )
+        ).one() or 0.0
+        avg_clv = (float(total_revenue) / total) if total > 0 else 0.0
+
+        # Churn estimate: customers active last month but not this month
+        churned = len(prev_customers - current_customers) if current_customers else 0
+        prev_total = len(prev_customers) if prev_customers else 1
+        churn_rate = (churned / prev_total * 100) if prev_total > 0 else 0.0
+
+        # NPS Calculation: % Promoters (4-5) - % Detractors (1-2)
+        from app.models.review import Review
+        total_ratings = db.exec(
+            select(func.count(Review.id)).where(
+                col(Review.station_id).in_(station_ids),
+                Review.rating.isnot(None),
+            )
+        ).one() or 0
+
+        nps_score = 0.0
+        if total_ratings > 0:
+            promoters = db.exec(
+                select(func.count(Review.id)).where(
+                    col(Review.station_id).in_(station_ids),
+                    Review.rating >= 4,
+                )
+            ).one() or 0
+            
+            detractors = db.exec(
+                select(func.count(Review.id)).where(
+                    col(Review.station_id).in_(station_ids),
+                    Review.rating <= 2,
+                )
+            ).one() or 0
+            
+            promoter_pct = (promoters / total_ratings) * 100
+            detractor_pct = (detractors / total_ratings) * 100
+            nps_score = promoter_pct - detractor_pct
+
+        return {
+            "total_unique_customers": total,
+            "repeat_customer_pct": round(repeat_pct, 1),
+            "new_customers_month": new_customers,
+            "avg_customer_lifetime_value": round(avg_clv, 2),
+            "churn_rate_pct": round(churn_rate, 1),
+            "nps_score": round(nps_score, 1),
+        }
+
+    # ─── 5. Peak Hours ───
+
+    @staticmethod
+    def get_peak_hours(db: Session, dealer_id: int) -> List[dict]:
+        """Hourly swap distribution (0-23) for the last 30 days."""
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        if not station_ids:
+            return [{"hour": h, "swap_count": 0} for h in range(24)]
+
+        since = datetime.now(UTC) - timedelta(days=30)
+        # Get all completed swaps in the last 30 days
+        swaps = db.exec(
+            select(SwapSession).where(
+                col(SwapSession.station_id).in_(station_ids),
+                SwapSession.status == "completed",
+                SwapSession.created_at >= since,
+            )
+        ).all()
+
+        hourly = {h: 0 for h in range(24)}
+        for swap in swaps:
+            hourly[swap.created_at.hour] += 1
+
+        return [{"hour": h, "swap_count": c} for h, c in sorted(hourly.items())]
+
+    # ─── 6. Export ───
+
+    @staticmethod
+    def export_csv(data: dict) -> str:
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Metric", "Value"])
+        for key, val in data.items():
+            if isinstance(val, (dict, list)):
+                writer.writerow([key, str(val)])
+            else:
+                writer.writerow([key, val])
+        return output.getvalue()
+
+    @staticmethod
+    def export_pdf(data: dict) -> str:
+        """Generate PDF using PDFService."""
+        from app.services.pdf_service import PDFService
+        from datetime import datetime, UTC
+        import uuid
+        import os
+
+        # Use an invoice/report generator logic
+        filename = f"dealer_report_{data.get('station_count', 0)}_{uuid.uuid4().hex[:6]}.pdf"
+        filepath = f"/tmp/{filename}"
+
+        # Assuming PDFService has generate_invoice that writes to a file
+        # We'll build the data dict for PDFService
+        pdf_data = {
+            "invoice_number": f"REP-{datetime.now(UTC).strftime('%Y%M')}",
+            "dealer_report": True,
+            "date": data.get("timestamp"),
+            "amount_due": data.get("revenue_month"),
+        }
+        for k, v in data.items():
+            pdf_data[k] = v
+
+        try:
+            # We don't have a direct raw PDF generator, so we use this mock
+            # Or build a simple FPDF right here
+            from fpdf import FPDF
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=15)
+            pdf.cell(200, 10, txt="Dealer Performance Report", ln=1, align="C")
+            pdf.set_font("Arial", size=10)
+            for k, v in data.items():
+                if isinstance(v, dict):
+                    pdf.cell(200, 10, txt=f"{k}:", ln=1, align="L")
+                    for k2, v2 in v.items():
+                        pdf.cell(200, 10, txt=f"    {k2}: {v2}", ln=1, align="L")
+                else:
+                    pdf.cell(200, 10, txt=f"{k}: {v}", ln=1, align="L")
+            pdf.output(filepath)
+            return filepath
+        except Exception as e:
+            logger.error(f"Error generating PDF: {str(e)}")
+            raise e
+
+    @staticmethod
+    def email_report(db: Session, dealer_id: int):
+        """Generates report and emails it to dealer."""
+        from app.models.dealer import DealerProfile
+        from app.services.email_service import EmailService
+
+        dealer = db.exec(select(DealerProfile).where(DealerProfile.id == dealer_id)).first()
+        if not dealer or not dealer.contact_email:
+            raise Exception("Dealer email not found.")
+
+        # Get data and generate PDF
+        data = DealerAnalyticsService.get_overview(db, dealer_id)
+        
+        # We append a customer insight block to it
+        cust_data = DealerAnalyticsService.get_customer_insights(db, dealer_id)
+        data.update(cust_data)
+
+        pdf_path = DealerAnalyticsService.export_pdf(data)
+
+        # Send email
+        body = f"Attached is your performance overview up to {datetime.now(UTC).isoformat()}."
+        # In actual prod we attach the file via EmailService (which is currently mocked)
+        EmailService.send_email(dealer.contact_email, "Dealer Performance Report", body)
+        return {"status": "success", "email": dealer.contact_email}
+
+    # ─── Helpers ───
+
+    @staticmethod
+    def get_profitability_analysis(db: Session, dealer_id: int) -> dict:
+        """
+        Comprehensive profitability analysis for the dealer.
+        Formula: Revenue - (Depreciation + Estimated Power Cost + Maintenance)
+        """
+        overview = DealerAnalyticsService.get_overview(db, dealer_id)
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        
+        revenue = overview["revenue_month"]
+        
+        # Estimate costs
+        from app.models.battery import Battery
+        total_asset_value = db.exec(
+            select(func.sum(Battery.purchase_cost)).where(
+                col(Battery.station_id).in_(station_ids)
+            )
+        ).one() or 0.0
+        monthly_depreciation = total_asset_value * 0.01
+        
+        swaps = overview["swaps_month"]
+        power_cost = swaps * 10.0
+        maintenance_cost = len(station_ids) * 500.0
+        
+        total_cost = monthly_depreciation + power_cost + maintenance_cost
+        gross_profit = revenue - total_cost
+        margin_pct = (gross_profit / revenue * 100) if revenue > 0 else 0.0
+        
+        return {
+            "revenue": revenue,
+            "estimated_costs": {
+                "depreciation": round(float(monthly_depreciation), 2),
+                "power": round(power_cost, 2),
+                "maintenance": round(maintenance_cost, 2),
+                "total": round(float(total_cost), 2)
+            },
+            "gross_profit": round(float(gross_profit), 2),
+            "margin_percentage": round(margin_pct, 1),
+            "forecast_next_month_profit": round(float(gross_profit * 1.05), 2)
+        }
+
+    @staticmethod
+    def get_margin_by_battery_type(db: Session, dealer_id: int) -> List[dict]:
+        """Breakdown of revenue vs estimated cost per battery type."""
+        from app.models.battery import Battery
+        station_ids = DealerAnalyticsService._get_station_ids(db, dealer_id)
+        if not station_ids:
+            return []
+            
+        battery_data = db.exec(
+            select(Battery.battery_type, func.count(Battery.id), func.sum(Battery.purchase_cost))
+            .where(col(Battery.station_id).in_(station_ids))
+            .group_by(Battery.battery_type)
+        ).all()
+        
+        results = []
+        for b_type, count, cost in battery_data:
+            results.append({
+                "battery_type": b_type,
+                "count": count,
+                "asset_value": round(float(cost), 2),
+                "monthly_depreciation": round(float(cost) * 0.01, 2)
+            })
+            
+        return results
+
+    # ─── Helpers ───
+    @staticmethod
+    def _get_station_ids(db: Session, dealer_id: int) -> List[int]:
+        return list(db.exec(
+            select(Station.id).where(Station.dealer_id == dealer_id)
+        ).all())

@@ -1,0 +1,497 @@
+[
+  {
+    "severity": "HIGH",
+    "shape": "3",
+    "table": "job_executions",
+    "message": "job_executions: columns 'execution_id' and 'parent_execution_id' \u2014 one is a substring of the other",
+    "detail": {
+      "columns": [
+        "execution_id",
+        "parent_execution_id"
+      ]
+    }
+  },
+  {
+    "severity": "HIGH",
+    "shape": "3",
+    "table": "manifest_items",
+    "message": "manifest_items: columns 'battery_id' and 'battery_table_id' \u2014 one is a substring of the other",
+    "detail": {
+      "columns": [
+        "battery_id",
+        "battery_table_id"
+      ]
+    }
+  },
+  {
+    "severity": "HIGH",
+    "shape": "3",
+    "table": "return_requests",
+    "message": "return_requests: columns 'order_id' and 'delivery_order_id' \u2014 one is a substring of the other",
+    "detail": {
+      "columns": [
+        "order_id",
+        "delivery_order_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "2",
+    "table": null,
+    "message": "tables 'chat_sessions' and 'kyc_requests' share 71% of columns (5 of 7) \u2014 suspected concept duplicate",
+    "detail": {
+      "tables": [
+        "chat_sessions",
+        "kyc_requests"
+      ],
+      "jaccard": 0.71,
+      "shared_columns": [
+        "created_at",
+        "id",
+        "status",
+        "updated_at",
+        "user_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "analytics_activity_events",
+    "message": "analytics_activity_events: 4 column(s) in DB but no model declares them \u2014 ['entity_id', 'entity_type', 'metadata', 'user_id']",
+    "detail": {
+      "ghost_columns": [
+        "entity_id",
+        "entity_type",
+        "metadata",
+        "user_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "analytics_report_jobs",
+    "message": "analytics_report_jobs: 6 column(s) in DB but no model declares them \u2014 ['error', 'id', 'parameters', 'report_type', 'requested_by', 'result_url']",
+    "detail": {
+      "ghost_columns": [
+        "error",
+        "id",
+        "parameters",
+        "report_type",
+        "requested_by",
+        "result_url"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "dealer_profiles",
+    "message": "dealer_profiles: 2 column(s) in DB but no model declares them \u2014 ['min_payout_amount', 'payout_interval']",
+    "detail": {
+      "ghost_columns": [
+        "min_payout_amount",
+        "payout_interval"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "idempotency_keys",
+    "message": "idempotency_keys: 3 column(s) in DB but no model declares them \u2014 ['key', 'response_body', 'response_status']",
+    "detail": {
+      "ghost_columns": [
+        "key",
+        "response_body",
+        "response_status"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "inventory_transfer_items",
+    "message": "inventory_transfer_items: 1 column(s) in DB but no model declares them \u2014 ['serial_number']",
+    "detail": {
+      "ghost_columns": [
+        "serial_number"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "inventory_transfers",
+    "message": "inventory_transfers: 7 column(s) in DB but no model declares them \u2014 ['from_station_id', 'from_warehouse_id', 'initiated_by', 'notes', 'to_station_id', 'to_warehouse_id', 'transfer_number']",
+    "detail": {
+      "ghost_columns": [
+        "from_station_id",
+        "from_warehouse_id",
+        "initiated_by",
+        "notes",
+        "to_station_id",
+        "to_warehouse_id",
+        "transfer_number"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "logistics_order_batteries",
+    "message": "logistics_order_batteries: 3 column(s) in DB but no model declares them \u2014 ['post_transfer_status', 'pre_transfer_status', 'serial_number']",
+    "detail": {
+      "ghost_columns": [
+        "post_transfer_status",
+        "pre_transfer_status",
+        "serial_number"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "logistics_orders",
+    "message": "logistics_orders: 7 column(s) in DB but no model declares them \u2014 ['created_by', 'destination_station_id', 'destination_warehouse_id', 'idempotency_key', 'order_number', 'scheduled_at', 'source_warehouse_id']",
+    "detail": {
+      "ghost_columns": [
+        "created_by",
+        "destination_station_id",
+        "destination_warehouse_id",
+        "idempotency_key",
+        "order_number",
+        "scheduled_at",
+        "source_warehouse_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "manifest_items",
+    "message": "manifest_items: 2 column(s) in DB but no model declares them \u2014 ['condition', 'notes']",
+    "detail": {
+      "ghost_columns": [
+        "condition",
+        "notes"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "manifests",
+    "message": "manifests: 4 column(s) in DB but no model declares them \u2014 ['driver_id', 'manifest_number', 'updated_at', 'vehicle_id']",
+    "detail": {
+      "ghost_columns": [
+        "driver_id",
+        "manifest_number",
+        "updated_at",
+        "vehicle_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "notification_outbox",
+    "message": "notification_outbox: 7 column(s) in DB but no model declares them \u2014 ['attempts', 'body', 'data', 'failed', 'sent', 'sent_at', 'title']",
+    "detail": {
+      "ghost_columns": [
+        "attempts",
+        "body",
+        "data",
+        "failed",
+        "sent",
+        "sent_at",
+        "title"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "order_realtime_outbox",
+    "message": "order_realtime_outbox: 1 column(s) in DB but no model declares them \u2014 ['published']",
+    "detail": {
+      "ghost_columns": [
+        "published"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "passkey_challenges",
+    "message": "passkey_challenges: 1 column(s) in DB but no model declares them \u2014 ['type']",
+    "detail": {
+      "ghost_columns": [
+        "type"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "passkey_credentials",
+    "message": "passkey_credentials: 1 column(s) in DB but no model declares them \u2014 ['device_type']",
+    "detail": {
+      "ghost_columns": [
+        "device_type"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "payment_methods",
+    "message": "payment_methods: 5 column(s) in DB but no model declares them \u2014 ['deleted_at', 'display_name', 'is_deleted', 'metadata', 'type']",
+    "detail": {
+      "ghost_columns": [
+        "deleted_at",
+        "display_name",
+        "is_deleted",
+        "metadata",
+        "type"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "station_daily_metrics",
+    "message": "station_daily_metrics: 7 column(s) in DB but no model declares them \u2014 ['avg_battery_health', 'created_at', 'date', 'rentals_count', 'revenue', 'swaps_count', 'uptime_minutes']",
+    "detail": {
+      "ghost_columns": [
+        "avg_battery_health",
+        "created_at",
+        "date",
+        "rentals_count",
+        "revenue",
+        "swaps_count",
+        "uptime_minutes"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "stock_discrepancies",
+    "message": "stock_discrepancies: 7 column(s) in DB but no model declares them \u2014 ['actual_location', 'battery_id', 'expected_location', 'reported_at', 'resolved', 'resolved_at', 'warehouse_id']",
+    "detail": {
+      "ghost_columns": [
+        "actual_location",
+        "battery_id",
+        "expected_location",
+        "reported_at",
+        "resolved",
+        "resolved_at",
+        "warehouse_id"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "4",
+    "table": "telemetics_data",
+    "message": "telemetics_data: 4 column(s) in DB but no model declares them \u2014 ['id', 'latitude', 'longitude', 'recorded_at']",
+    "detail": {
+      "ghost_columns": [
+        "id",
+        "latitude",
+        "longitude",
+        "recorded_at"
+      ]
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "audit_logs",
+    "message": "audit_logs.user_id: looks like FK \u2192 users.id but no ForeignKey declared",
+    "detail": {
+      "column": "user_id",
+      "implied_target": "users.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "batteries",
+    "message": "batteries.iot_device_id: looks like FK \u2192 iot_devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "iot_device_id",
+      "implied_target": "iot_devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "biometric_credentials",
+    "message": "biometric_credentials.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "device_fingerprints",
+    "message": "device_fingerprints.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "inventory_transfer_items",
+    "message": "inventory_transfer_items.battery_id: looks like FK \u2192 batteries.id but no ForeignKey declared",
+    "detail": {
+      "column": "battery_id",
+      "implied_target": "batteries.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "iot_devices",
+    "message": "iot_devices.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "logistics_manifests",
+    "message": "logistics_manifests.vehicle_id: looks like FK \u2192 vehicles.id but no ForeignKey declared",
+    "detail": {
+      "column": "vehicle_id",
+      "implied_target": "vehicles.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "logistics_order_batteries",
+    "message": "logistics_order_batteries.battery_id: looks like FK \u2192 batteries.id but no ForeignKey declared",
+    "detail": {
+      "column": "battery_id",
+      "implied_target": "batteries.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "manifest_items",
+    "message": "manifest_items.battery_id: looks like FK \u2192 batteries.id but no ForeignKey declared",
+    "detail": {
+      "column": "battery_id",
+      "implied_target": "batteries.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "password_history",
+    "message": "password_history.user_id: looks like FK \u2192 users.id but no ForeignKey declared",
+    "detail": {
+      "column": "user_id",
+      "implied_target": "users.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "return_requests",
+    "message": "return_requests.delivery_order_id: looks like FK \u2192 delivery_orders.id but no ForeignKey declared",
+    "detail": {
+      "column": "delivery_order_id",
+      "implied_target": "delivery_orders.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "security_events",
+    "message": "security_events.user_id: looks like FK \u2192 users.id but no ForeignKey declared",
+    "detail": {
+      "column": "user_id",
+      "implied_target": "users.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "session_tokens",
+    "message": "session_tokens.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "shelf_batteries",
+    "message": "shelf_batteries.battery_id: looks like FK \u2192 batteries.id but no ForeignKey declared",
+    "detail": {
+      "column": "battery_id",
+      "implied_target": "batteries.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "telemetry",
+    "message": "telemetry.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "MED",
+    "shape": "5a",
+    "table": "user_sessions",
+    "message": "user_sessions.device_id: looks like FK \u2192 devices.id but no ForeignKey declared",
+    "detail": {
+      "column": "device_id",
+      "implied_target": "devices.id"
+    }
+  },
+  {
+    "severity": "LOW",
+    "shape": "5b",
+    "table": "biometric_credentials",
+    "message": "biometric_credentials.device_id: orphan check skipped (ProgrammingError)",
+    "detail": {
+      "error": "(psycopg2.errors.UndefinedTable) relation \"biometric_credentials\" does not exist\nLINE 1: SELECT COUNT(*) FROM \"biometric_credentials\" c WHERE c.\"devi...\n                             ^\n\n[SQL: SELECT CO"
+    }
+  },
+  {
+    "severity": "LOW",
+    "shape": "5b",
+    "table": "logistics_manifests",
+    "message": "logistics_manifests.vehicle_id: orphan check skipped (ProgrammingError)",
+    "detail": {
+      "error": "(psycopg2.errors.UndefinedTable) relation \"logistics_manifests\" does not exist\nLINE 1: SELECT COUNT(*) FROM \"logistics_manifests\" c WHERE c.\"vehicl...\n                             ^\n\n[SQL: SELECT COUN"
+    }
+  },
+  {
+    "severity": "LOW",
+    "shape": "5b",
+    "table": "shelf_batteries",
+    "message": "shelf_batteries.battery_id: orphan check skipped (ProgrammingError)",
+    "detail": {
+      "error": "(psycopg2.errors.UndefinedTable) relation \"shelf_batteries\" does not exist\nLINE 1: SELECT COUNT(*) FROM \"shelf_batteries\" c WHERE c.\"battery_id...\n                             ^\n\n[SQL: SELECT COUNT(*)"
+    }
+  }
+]

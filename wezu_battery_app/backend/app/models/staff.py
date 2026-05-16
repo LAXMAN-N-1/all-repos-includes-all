@@ -1,0 +1,36 @@
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
+from datetime import datetime, timezone; UTC = timezone.utc
+
+class StaffProfile(SQLModel, table=True):
+    __tablename__ = "staff_profiles"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id", unique=True)
+    
+    # Organization Link
+    dealer_id: Optional[int] = Field(default=None, foreign_key="dealer_profiles.id") # If staff belongs to a dealer
+    station_id: Optional[int] = Field(default=None, foreign_key="stations.id") # If assigned to specific station
+    
+    # Staff Details
+    staff_type: str = Field(index=True) # station_manager, technician, warehouse_manager
+    employment_id: str = Field(unique=True)
+    reporting_manager_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    
+    # Relationships
+    user: "User" = Relationship(
+        back_populates="staff_profile",
+        sa_relationship_kwargs={
+            "foreign_keys": "StaffProfile.user_id",
+            "overlaps": "user,staff_profile,staff_members"
+        }
+    )
+    dealer: Optional["DealerProfile"] = Relationship(
+        back_populates="staff_members",
+        sa_relationship_kwargs={
+            "overlaps": "dealer,staff_members,user"
+        }
+    )
+    # station: Optional["Station"] = Relationship()

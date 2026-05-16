@@ -1,0 +1,632 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/burndown/:sprintId",
+    "source": "src/routes/analytics.ts:103"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/client-stats",
+    "source": "src/routes/analytics.ts:55"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/dashboard",
+    "source": "src/routes/analytics.ts:27"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/db",
+    "source": "src/routes/analytics.ts:187"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/export",
+    "source": "src/routes/analytics.ts:240"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/growth",
+    "source": "src/routes/analytics.ts:205"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/personal-stats",
+    "source": "src/routes/analytics.ts:41"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/project-health/:projectId",
+    "source": "src/routes/analytics.ts:151"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/resolution",
+    "source": "src/routes/analytics.ts:219"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/system",
+    "source": "src/routes/analytics.ts:169"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/team-performance",
+    "source": "src/routes/analytics.ts:127"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/analytics/velocity",
+    "source": "src/routes/analytics.ts:79"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/attendance/:id/status",
+    "source": "src/routes/attendanceRoutes.ts:30"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/attendance/check-in",
+    "source": "src/routes/attendanceRoutes.ts:16"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/attendance/check-out",
+    "source": "src/routes/attendanceRoutes.ts:17"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance/employee/:userId",
+    "source": "src/routes/attendanceRoutes.ts:21"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance/my-attendance",
+    "source": "src/routes/attendanceRoutes.ts:18"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/attendance",
+    "source": "src/routes/attendanceRoutes.ts:41"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/audit-logs/stats",
+    "source": "src/routes/auditLogs.ts:26"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/audit-logs",
+    "source": "src/routes/auditLogs.ts:14"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/change-password",
+    "source": "src/routes/auth.ts:56"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/forgot-password",
+    "source": "src/routes/auth.ts:34"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "source": "src/routes/auth.ts:19"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "source": "src/routes/auth.ts:54"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "source": "src/routes/auth.ts:55"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/refresh-token",
+    "source": "src/routes/auth.ts:26"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/reset-password",
+    "source": "src/routes/auth.ts:43"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/pending-actions",
+    "source": "src/routes/client.ts:64"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/activity",
+    "source": "src/routes/client.ts:50"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/milestones",
+    "source": "src/routes/client.ts:43"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/tasks",
+    "source": "src/routes/client.ts:36"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id/timeline",
+    "source": "src/routes/client.ts:57"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects/:id",
+    "source": "src/routes/client.ts:29"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/projects",
+    "source": "src/routes/client.ts:22"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/client/search",
+    "source": "src/routes/client.ts:16"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/epics/:id/close",
+    "source": "src/routes/epics.ts:48"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:24"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:30"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/epics/:id",
+    "source": "src/routes/epics.ts:40"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/epics",
+    "source": "src/routes/epics.ts:22"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/epics",
+    "source": "src/routes/epics.ts:12"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:24"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:30"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/features/:id",
+    "source": "src/routes/features.ts:40"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/features",
+    "source": "src/routes/features.ts:22"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/features",
+    "source": "src/routes/features.ts:12"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id/children",
+    "source": "src/routes/issues.ts:32"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/issues/:id/client-approval",
+    "source": "src/routes/issues.ts:129"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id/history",
+    "source": "src/routes/issues.ts:194"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/:id/links/:linkId",
+    "source": "src/routes/issues.ts:184"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:id/links",
+    "source": "src/routes/issues.ts:175"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id/move-to-sprint",
+    "source": "src/routes/issues.ts:66"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id/status",
+    "source": "src/routes/issues.ts:117"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:90"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:140"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/:id",
+    "source": "src/routes/issues.ts:147"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/attachments",
+    "source": "src/routes/issues.ts:201"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/:issueId/comments",
+    "source": "src/routes/issues.ts:154"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/comments",
+    "source": "src/routes/issues.ts:161"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/:issueId/worklog",
+    "source": "src/routes/issues.ts:168"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/assign-sprint",
+    "source": "src/routes/issues.ts:106"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/issues/attachments/:id",
+    "source": "src/routes/issues.ts:208"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/create-story",
+    "source": "src/routes/issues.ts:39"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues/create-subtask",
+    "source": "src/routes/issues.ts:54"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/hierarchy/:projectId",
+    "source": "src/routes/issues.ts:25"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/my-issues",
+    "source": "src/routes/issues.ts:18"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues/project/:projectId/backlog",
+    "source": "src/routes/issues.ts:83"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/issues",
+    "source": "src/routes/issues.ts:76"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/issues",
+    "source": "src/routes/issues.ts:97"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/leaves/:id/status",
+    "source": "src/routes/leaveRoutes.ts:27"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/leaves/apply",
+    "source": "src/routes/leaveRoutes.ts:16"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves/my-balances",
+    "source": "src/routes/leaveRoutes.ts:18"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves/my-leaves",
+    "source": "src/routes/leaveRoutes.ts:17"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/leaves",
+    "source": "src/routes/leaveRoutes.ts:21"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/milestones/:id",
+    "source": "src/routes/milestones.ts:36"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/milestones/:id",
+    "source": "src/routes/milestones.ts:52"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/milestones/projects/:projectId/milestones",
+    "source": "src/routes/milestones.ts:15"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/milestones/projects/:projectId/milestones",
+    "source": "src/routes/milestones.ts:22"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/notifications/:id/read",
+    "source": "src/routes/notifications.ts:24"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/notifications/read-all",
+    "source": "src/routes/notifications.ts:19"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/notifications",
+    "source": "src/routes/notifications.ts:12"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/portal-settings",
+    "source": "src/routes/portalSettings.ts:17"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/portal-settings",
+    "source": "src/routes/portalSettings.ts:20"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id/issues",
+    "source": "src/routes/projects.ts:92"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id/members/:userId",
+    "source": "src/routes/projects.ts:81"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id/members",
+    "source": "src/routes/projects.ts:62"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects/:id/members",
+    "source": "src/routes/projects.ts:69"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:31"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:46"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id",
+    "source": "src/routes/projects.ts:54"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:projectId/files/:fileId/download",
+    "source": "src/routes/projects.ts:120"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/projects/:projectId/files/:fileId",
+    "source": "src/routes/projects.ts:130"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:projectId/files",
+    "source": "src/routes/projects.ts:100"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects/:projectId/files",
+    "source": "src/routes/projects.ts:110"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/client",
+    "source": "src/routes/projects.ts:24"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects",
+    "source": "src/routes/projects.ts:17"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects",
+    "source": "src/routes/projects.ts:38"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/settings/:key",
+    "source": "src/routes/settings.ts:16"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/settings/:key",
+    "source": "src/routes/settings.ts:19"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/settings/test-email",
+    "source": "src/routes/settings.ts:30"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/settings",
+    "source": "src/routes/settings.ts:13"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints/:id/complete",
+    "source": "src/routes/sprints.ts:68"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints/:id/start",
+    "source": "src/routes/sprints.ts:60"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints/:id/statistics",
+    "source": "src/routes/sprints.ts:46"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/sprints/:id",
+    "source": "src/routes/sprints.ts:76"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/sprints/:id",
+    "source": "src/routes/sprints.ts:84"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints/project/:projectId",
+    "source": "src/routes/sprints.ts:53"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/sprints",
+    "source": "src/routes/sprints.ts:40"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/sprints",
+    "source": "src/routes/sprints.ts:32"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:25"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:30"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/time/time-entries/:id",
+    "source": "src/routes/timeTracking.ts:40"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries/summary/:period",
+    "source": "src/routes/timeTracking.ts:47"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/time/time-entries",
+    "source": "src/routes/timeTracking.ts:24"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/time/time-entries",
+    "source": "src/routes/timeTracking.ts:14"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/:id/activity",
+    "source": "src/routes/users.ts:91"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/:id/change-password",
+    "source": "src/routes/users.ts:98"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:30"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:76"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/users/:id",
+    "source": "src/routes/users.ts:83"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/bulk",
+    "source": "src/routes/users.ts:37"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users/bulk-action",
+    "source": "src/routes/users.ts:50"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users/export",
+    "source": "src/routes/users.ts:16"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/users",
+    "source": "src/routes/users.ts:23"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/users",
+    "source": "src/routes/users.ts:61"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1",
+    "source": "src/routes/index.ts:43"
+  }
+]

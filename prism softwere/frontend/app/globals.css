@@ -1,0 +1,300 @@
+/* Runtime Google Fonts – loaded by the browser, not at build time */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ========================================
+     ROSY PINK DESIGN SYSTEM (HSL)
+     ======================================== */
+
+  /* Primary Action Color (#F2BED1 -> 338 65% 85%) */
+  --primary: 338 65% 85%;
+  --primary-foreground: 338 20% 20%;
+
+  --primary-50: 345 23% 99%;
+  --primary-100: 345 23% 97%;
+  --primary-500: 338 65% 85%;
+
+  /* Secondary/Accent (#FDCEDF -> 338 88% 90%) */
+  --secondary: 338 88% 90%;
+  --secondary-foreground: 338 20% 25%;
+
+  /* Background & Surfaces */
+  --background: 345 23% 97%;
+  /* #F9F5F6 Background */
+  --foreground: 338 30% 15%;
+
+  --card: 338 44% 94%;
+  /* #F8E8EE Card Surface */
+  --card-foreground: 338 30% 15%;
+
+  --popover: 345 23% 97%;
+  --popover-foreground: 338 30% 15%;
+
+  --muted: 338 44% 94%;
+  --muted-foreground: 338 10% 45%;
+
+  --accent: 338 88% 90%;
+  /* #FDCEDF Accent */
+  --accent-foreground: 338 30% 20%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 338 20% 85%;
+  --input: 338 20% 85%;
+  --ring: 338 65% 85%;
+
+  /* Semantic Colors for Legacy classes */
+  --surface: 338 44% 94%;
+  --text-primary: 338 30% 15%;
+  --text-secondary: 338 20% 40%;
+  --text-tertiary: 338 10% 60%;
+
+  /* Shadows (using a soft pink tint) */
+  --shadow-sm: 0 1px 2px 0 rgb(242 190 209 / 0.1);
+  --shadow: 0 1px 3px 0 rgb(242 190 209 / 0.15);
+  --shadow-md: 0 4px 6px -1px rgb(242 190 209 / 0.15);
+  --shadow-lg: 0 10px 15px -3px rgb(242 190 209 / 0.2);
+  --shadow-xl: 0 20px 25px -5px rgb(242 190 209 / 0.2);
+}
+
+.dark {
+  /* ========================================
+     JIRA-LIKE DESIGN SYSTEM - DARK MODE
+     ======================================== */
+
+  /* Semantic Colors - Dark Mode */
+  --background: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+
+  /* Adjust shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+
+  code,
+  pre {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+}
+
+@layer utilities {
+
+  /* Glass-morphism effects */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gradient backgrounds */
+  .gradient-mesh {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-indigo) 100%);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary) 100%);
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary-500), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow effects */
+  .shadow-glow {
+    box-shadow: 0 0 20px rgb(242 190 209 / 0.3);
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-fast {
+    transition: all 150ms ease-out;
+  }
+
+  .transition-slow {
+    transition: all 300ms ease-in-out;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: var(--radius);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: var(--radius);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--surface);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border);
+  }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fade-in 300ms ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 300ms ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 300ms ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 200ms ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg, var(--background) 0%, var(--card) 50%, var(--background) 100%);
+  background-size: 1000px 100%;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

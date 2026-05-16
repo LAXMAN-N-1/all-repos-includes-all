@@ -1,0 +1,65 @@
+services:
+  # Redis for queue management
+  redis:
+    image: redis:7-alpine
+    container_name: pm-redis-prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - pm-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pm-backend-prod
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DIALECT: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      CORS_ORIGIN: https://prism.powerfrill.com
+    ports:
+      - "5001:5001"
+    depends_on:
+      - redis
+    networks:
+      - pm-network
+    restart: unless-stopped
+
+  # Frontend Web App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.powerfrill.com
+    container_name: pm-frontend-prod
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    networks:
+      - pm-network
+    restart: unless-stopped
+
+networks:
+  pm-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

@@ -1,0 +1,1370 @@
+from fastapi import APIRouter, Depends, Header, HTTPException, status, Request, Form
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+from sqlmodel import Session, select
+from app.db.session import get_session
+from app.models.user import User, UserStatus
+from app.schemas.user import Token
+from app.models.otp import OTP
+from app.models.email_verification import UserEmailVerification
+from app.services.auth_service import AuthService
+from app.services.otp_service import OTPService
+from app.services.fraud_service import FraudService
+from app.services.token_service import TokenService
+from app.core.security import create_access_token, create_refresh_token, get_password_hash, verify_password
+from app.core.proxy import get_client_ip
+from app.api import deps
+from app.core.audit import AuditLogger, audit_log
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+import logging
+import hashlib
+import re
+from typing import Any, List, Optional
+from datetime import datetime, UTC, timedelta
+import uuid
+from app.middleware.rate_limit import limiter
+from app.repositories.user_repository import user_repository
+from app.services.security_service import SecurityService
+from app.core.rbac import canonical_role_name, role_sort_key
+from app.core.app_scope_access import (
+    filter_roles_for_app_scope,
+    normalize_app_scope,
+    resolve_app_scope,
+)
+from app.utils.datetime_utils import ensure_utc_aware, utcnow
+from app.schemas.auth import (
+    VerifyEmailRequest, ChangePasswordRequest, TwoFASetupResponse,
+    TwoFAVerifyRequest, TwoFADisableRequest, BiometricRegisterRequest,
+    BiometricLoginRequest, SecurityQuestionResponse, SetSecurityQuestionRequest,
+    VerifySecurityQuestionRequest, MessageResponse, LogoutAllResponse,
+    EmailVerificationSendResponse, EmailVerificationVerifyResponse,
+    SecurityQuestionVerifyResponse, TwoFAVerifyResponse,
+    AdminLoginResponse, AdminLoginUser,
+    ForgotPasswordRequest, LoginRequest, LoginResponse,
+    RoleSelectRequest, SocialLoginRequest,
+)
+
+router = APIRouter()
+logger = logging.getLogger("wezu_auth")
+
+
+def _active_roles_for_user(db: Session, user: User) -> list:
+    roles = deps.get_active_roles_for_user_id(db, user.id)
+    if roles:
+        return roles
+    return [user.role] if user.role else []
+
+
+def _resolve_selected_role(
+    db: Session,
+    user: User,
+    requested_role: Optional[str] = None,
+    app_scope: Optional[str] = None,
+    require_explicit_scope_selection: bool = False,
+):
+    active_roles = _active_roles_for_user(db, user)
+    if not active_roles:
+        raise HTTPException(status_code=403, detail="No roles assigned to user")
+
+    unique_role_names = {
+        canonical_role_name(role.name)
+        for role in active_roles
+        if getattr(role, "name", None)
+    }
+    available_role_names = sorted(
+        [role_name for role_name in unique_role_names if role_name],
+        key=lambda value: role_sort_key(value),
+    )
+    effective_role_names = available_role_names
+    if app_scope:
+        scoped_roles = filter_roles_for_app_scope(available_role_names, app_scope)
+        if not scoped_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Account is not authorized for {app_scope} app",
+            )
+        effective_role_names = scoped_roles
+
+    effective_role_name_set = set(effective_role_names)
+    role_by_name = {}
+    for role in active_roles:
+        role_name = canonical_role_name(getattr(role, "name", None))
+        if role_name and role_name in effective_role_name_set and role_name not in role_by_name:
+            role_by_name[role_name] = role
+
+    selected_name = canonical_role_name(requested_role) if requested_role else None
+    if selected_name:
+        selected_role = role_by_name.get(selected_name)
+        if not selected_role:
+            if app_scope:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Role '{selected_name}' is not allowed for {app_scope} app",
+                )
+            raise HTTPException(status_code=403, detail=f"User does not have role: {requested_role}")
+    else:
+        if app_scope and require_explicit_scope_selection and len(effective_role_names) > 1:
+            return None, effective_role_names, True
+
+        if user.role_id:
+            selected_role = next(
+                (
+                    role
+                    for role in active_roles
+                    if role.id == user.role_id
+                    and canonical_role_name(getattr(role, "name", None)) in effective_role_name_set
+                ),
+                None,
+            )
+        else:
+            selected_role = None
+        if not selected_role:
+            selected_role = role_by_name.get(effective_role_names[0]) if effective_role_names else None
+
+        if not selected_role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No compatible active role found for this account",
+            )
+
+    return selected_role, effective_role_names, False
+
+
+def _resolve_request_app_scope(
+    body_scope: Optional[str],
+    header_scope: Optional[str],
+) -> Optional[str]:
+    try:
+        return resolve_app_scope(request_scope=body_scope, header_scope=header_scope)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(exc),
+        )
+
+
+def _assign_primary_role(db: Session, user: User, role) -> None:
+    from app.models.rbac import UserRole
+
+    user.role_id = role.id
+    db.add(user)
+
+    existing = db.exec(
+        select(UserRole).where(
+            UserRole.user_id == user.id,
+            UserRole.role_id == role.id,
+        )
+    ).first()
+    if not existing:
+        db.add(UserRole(user_id=user.id, role_id=role.id, effective_from=datetime.now(UTC)))
+    db.commit()
+    db.refresh(user)
+
+class UserCreate(BaseModel):
+    email: Optional[EmailStr] = None
+    password: str
+    full_name: str
+    phone_number: Optional[str] = None
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not re.search(r"\d", v):
+            raise ValueError("Password must contain at least one number")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", v):
+            raise ValueError("Password must contain at least one special character")
+        return v
+
+from app.schemas.user import UserResponse
+
+@router.post("/register", response_model=UserResponse)
+async def register(
+    user_in: UserCreate,
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Register a new user with email or phone and password.
+    """
+    if not user_in.email and not user_in.phone_number:
+        raise HTTPException(
+            status_code=400,
+            detail="Either email or phone number must be provided",
+        )
+
+    if user_in.email:
+        existing_user = user_repository.get_by_email(db, user_in.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system",
+            )
+            
+    if user_in.phone_number:
+         existing_user = user_repository.get_by_phone(db, user_in.phone_number)
+         if existing_user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this phone number already exists in the system",
+            )
+    
+    # Check phone number uniqueness
+    user_by_phone = db.exec(select(User).where(User.phone_number == user_in.phone_number)).first()
+    if user_by_phone:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this phone number already exists in the system",
+        )
+    
+    user = User(
+        email=user_in.email,
+        hashed_password=get_password_hash(user_in.password),
+        full_name=user_in.full_name,
+        phone_number=user_in.phone_number,
+        status=UserStatus.ACTIVE
+    )
+    
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    # Assign default role
+    from app.models.rbac import Role
+    customer_role = db.exec(select(Role).where(Role.name == "customer")).first()
+    if customer_role:
+        _assign_primary_role(db, user, customer_role)
+
+    # Audit log
+    AuditLogger.log_event(db, user.id, "REGISTER", "AUTH", resource_id=user.id)
+        
+    return user
+
+
+
+class EmailPasswordRequestForm:
+    """
+    Custom OAuth2 compatible form to show 'Email' instead of 'Username' in Swagger UI
+    """
+    def __init__(
+        self,
+        grant_type: str = Form(None, pattern="password"),
+        username: str = Form(..., description="Email or phone number", title="Email"),
+        password: str = Form(...),
+        totp_code: Optional[str] = Form(None),
+        role: Optional[str] = Form(None),
+        app_scope: Optional[str] = Form(None),
+        scope: str = Form(""),
+        client_id: Optional[str] = Form(None),
+        client_secret: Optional[str] = Form(None),
+    ):
+        self.grant_type = grant_type
+        self.username = username
+        self.password = password
+        self.totp_code = totp_code
+        self.role = role
+        self.app_scope = normalize_app_scope(app_scope)
+        self.scopes = scope.split()
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+@router.post("/token", response_model=Token, tags=["authentication"])
+@limiter.limit("5/minute")
+async def login_access_token(
+    request: Request,
+    db: Session = Depends(deps.get_db),
+    form_data: EmailPasswordRequestForm = Depends(),
+    x_app_scope: Optional[str] = Header(default=None, alias="X-App-Scope"),
+) -> Any:
+    """
+    OAuth2 compatible token login, get an access token for future requests (uses 'email' as username)
+    """
+    return await _process_login(
+        username=form_data.username,
+        password=form_data.password,
+        totp_code=form_data.totp_code,
+        requested_role=form_data.role,
+        app_scope=_resolve_request_app_scope(form_data.app_scope, x_app_scope),
+        db=db,
+        request=request
+    )
+
+async def _process_login(
+    username: str,
+    password: str,
+    db: Session,
+    request: Request,
+    totp_code: Optional[str] = None,
+    requested_role: Optional[str] = None,
+    app_scope: Optional[str] = None,
+) -> Any:
+    logger.info(f"Authenticating: {username}")
+    
+    user = user_repository.get_by_email(db, username)
+    
+    if not user:
+        # Try by phone number if email fails
+        user = user_repository.get_by_phone(db, username)
+
+    if not user or not verify_password(password, user.hashed_password):
+        # Extract IP and User-Agent
+        ip_address = get_client_ip(request)
+        user_agent = request.headers.get("user-agent")
+        AuditLogger.log_event(
+            db, 
+            None, 
+            "FAILED_LOGIN", 
+            "AUTH", 
+            metadata={"username": username, "reason": "invalid_credentials"},
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
+    if user.status != UserStatus.ACTIVE:
+        AuditLogger.log_event(db, user.id, "FAILED_LOGIN", "AUTH", metadata={"reason": "inactive_account"})
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    if not AuthService.verify_login_totp(db, user.id, totp_code):
+        AuditLogger.log_event(db, user.id, "FAILED_LOGIN", "AUTH", metadata={"reason": "invalid_or_missing_totp"})
+        raise HTTPException(status_code=400, detail="Two-factor authentication required or invalid code")
+
+    selected_role, _, _ = _resolve_selected_role(
+        db,
+        user,
+        requested_role=requested_role,
+        app_scope=app_scope,
+        require_explicit_scope_selection=False,
+    )
+    if user.role_id != selected_role.id:
+        _assign_primary_role(db, user, selected_role)
+        
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=user.id, jti=token_jti)
+    
+    # Audit log success
+    ip_address = get_client_ip(request)
+    user_agent = request.headers.get("user-agent")
+    AuditLogger.log_event(db, user.id, "LOGIN", "AUTH", ip_address=ip_address, user_agent=user_agent)
+    
+    # Create session first so access-token SID is stable (session.id).
+    session = AuthService.create_user_session(db, user.id, refresh_token, request, token_jti=token_jti)
+    sid = str(session.id) if session and session.id is not None else token_jti
+    access_token = create_access_token(subject=user.id, extra_claims={"sid": sid})
+    
+    logger.info(f"LOGIN_SUCCESS: User ID {user.id}")
+    
+    # Create Session
+    try:
+        # Record Login History
+        from app.models.login_history import LoginHistory
+        login_record = LoginHistory(
+            user_id=user.id,
+            ip_address=get_client_ip(request),
+            user_agent=request.headers.get("user-agent", "Unknown"),
+            device_type="web" if "Mozilla" in request.headers.get("user-agent", "") else "mobile",
+            status="success"
+        )
+        db.add(login_record)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"SESSION_HISTORY_RECORD_FAILED: {str(e)}")
+        # Some systems might still log in but token usage might fail later if session is strict
+    
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        refresh_token=refresh_token,
+        user=user
+    )
+
+
+class GoogleAuthRequest(BaseModel):
+    token: str
+    consent: bool = False
+
+class AppleAuthRequest(BaseModel):
+    token: str
+    full_name: Optional[str] = None
+    consent: bool = False
+
+class OTPRequest(BaseModel):
+    target: str # email or phone_number
+    purpose: str = "registration"
+
+class OTPVerifyRequest(BaseModel):
+    target: str
+    code: str
+    purpose: str = "registration"
+    full_name: Optional[str] = None
+
+class PasswordRegisterRequest(BaseModel):
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    full_name: str
+    password: str
+
+class PasswordLoginRequest(BaseModel):
+    username: str # email or phone_number
+    password: str
+
+@router.post("/register/request-otp", response_model=MessageResponse)
+@limiter.limit("3/minute")
+async def request_registration_otp(
+    request: Request,
+    otp_data: OTPRequest,
+    db: Session = Depends(deps.get_db)
+):
+    # Check if user already exists
+    if "@" in otp_data.target:
+        statement = select(User).where(User.email == otp_data.target)
+    else:
+        statement = select(User).where(User.phone_number == otp_data.target)
+    
+    user = db.exec(statement).first()
+    is_new_user = user is None
+    
+    logger.info(f"OTP request for {otp_data.target}. New user: {is_new_user}")
+
+    # Generate and send OTP
+    code = OTPService.generate_otp(otp_data.target)
+    OTPService.create_otp_record(db, otp_data.target, code, otp_data.purpose)
+
+    logger.info(f"OTP requested for {otp_data.target} with purpose {otp_data.purpose}")
+    if "@" in otp_data.target:
+        await OTPService.send_email_otp(otp_data.target, code)
+    else:
+        await OTPService.send_sms_otp(otp_data.target, code)
+
+    return MessageResponse(message="OTP sent successfully")
+
+from sqlalchemy.orm import selectinload
+from app.models.rbac import Role
+
+@router.post("/register/verify-otp", response_model=Token)
+@limiter.limit("5/minute")
+async def verify_registration_otp(
+    verify_data: OTPVerifyRequest,
+    request: Request,
+    db: Session = Depends(deps.get_db)
+):
+    # Verify OTP
+    if not OTPService.verify_otp(db, verify_data.target, verify_data.code, verify_data.purpose):
+        logger.warning(f"Failed OTP verification attempt for {verify_data.target}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired OTP",
+        )
+
+    # Check if user already exists
+    if "@" in verify_data.target:
+        # Changed selectinload(User.roles) to User.role_id check or implicit handling
+        # Since role is now many-to-one (User -> Role), default lazy loading works 
+        # or we use selectinload(User.role)
+        statement = select(User).where(User.email == verify_data.target).options(selectinload(User.role))
+    else:
+        statement = select(User).where(User.phone_number == verify_data.target).options(selectinload(User.role))
+    
+    user = db.exec(statement).first()
+
+    if not user:
+        # Create new user
+        new_user_data = {
+            "full_name": verify_data.full_name,
+            "status": UserStatus.ACTIVE
+        }
+        if "@" in verify_data.target:
+            new_user_data["email"] = verify_data.target
+        else:
+            new_user_data["phone_number"] = verify_data.target
+
+        user = User(**new_user_data)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        # Assign Default Role: Customer
+        customer_role = db.exec(select(Role).where(Role.name == "customer")).first()
+        if customer_role:
+            _assign_primary_role(db, user, customer_role)
+        
+        # Check Fraud Risk
+        FraudService.calculate_risk_score(db, user.id)
+    else:
+        logger.info(f"Existing user linked via OTP: {verify_data.target}")
+        
+        # Activate account if pending.
+        if user.status != UserStatus.ACTIVE:
+            user.status = UserStatus.ACTIVE
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            logger.info(f"User {user.id} activated after OTP verification")
+
+    # Update Last Login
+    user.last_login = datetime.now(UTC)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # Create refresh token and bind session first for stable SID.
+    import uuid
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=user.id, jti=token_jti)
+
+    session = AuthService.create_user_session(db, user.id, refresh_token, request, token_jti=token_jti)
+    sid = str(session.id) if session and session.id is not None else token_jti
+    access_token = create_access_token(subject=user.id, extra_claims={"sid": sid})
+    return Token(access_token=access_token, refresh_token=refresh_token, user=user)
+
+
+
+@router.post("/verify-otp", response_model=Token)
+@limiter.limit("5/minute")
+async def verify_otp_alias(
+    verify_data: OTPVerifyRequest,
+    request: Request,
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Verify OTP and log in / activate account.
+    (Alias for /register/verify-otp to match new requirements)
+    """
+    return await verify_registration_otp(verify_data, request, db)
+
+@router.post("/social-login", response_model=LoginResponse)
+@limiter.limit("3/minute")
+async def social_login(
+    auth_data: SocialLoginRequest,
+    request: Request,
+    db: Session = Depends(get_session)
+):
+    """
+    Unified Social Login (Google, Facebook, Apple).
+    Creates user if not exists, or logs in existing user.
+    """
+    email = None
+    social_id = None
+    name = None
+    picture = None
+    
+    # 1. Verify Token based on Provider
+    if auth_data.provider == "google":
+        idinfo = await AuthService.verify_google_token(auth_data.token)
+        email = idinfo.get("email")
+        social_id = idinfo.get("sub")
+        name = idinfo.get("name")
+        picture = idinfo.get("picture")
+        
+    elif auth_data.provider == "facebook":
+        data = await AuthService.verify_facebook_token(auth_data.token)
+        email = data.get("email")
+        social_id = data.get("id")
+        name = data.get("name")
+        # Facebook picture structure is nested
+        if "picture" in data and "data" in data["picture"]:
+             picture = data["picture"]["data"]["url"]
+             
+    elif auth_data.provider == "apple":
+        payload = await AuthService.verify_apple_token(auth_data.token)
+        email = payload.get("email")
+        social_id = payload.get("sub")
+        # Apple only sends name on first login, so we might not have it here
+        # Client app usually sends it separately if needed, but we'll leave as None for now
+        
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported provider: {auth_data.provider}"
+        )
+
+    if not social_id:
+         raise HTTPException(status_code=400, detail="Could not retrieve social ID")
+
+    # 2. Check/Create User
+    # we match by email OR the specific social ID
+    
+    # Determine search logic using explicit conditions
+    conditions = []
+    if email:
+        conditions.append(User.email == email)
+    
+    if auth_data.provider == "google":
+        conditions.append(User.google_id == social_id)
+    elif auth_data.provider == "apple":
+        conditions.append(User.apple_id == social_id)
+    
+    from sqlalchemy import or_
+    # Updated options to selectinload(User.role)
+    user = db.exec(select(User).where(or_(*conditions)).options(selectinload(User.role))).first()
+
+    if not user:
+        if not email:
+             raise HTTPException(status_code=400, detail="Email required for new registration")
+             
+        # Create new user
+        user = User(
+            email=email,
+            full_name=name,
+            profile_picture=picture,
+            status=UserStatus.ACTIVE,
+        )
+        
+        # Set specific ID
+        if auth_data.provider == "google":
+            user.google_id = social_id
+        elif auth_data.provider == "apple":
+            user.apple_id = social_id
+            
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        # Assign Default Role: Customer
+        customer_role = db.exec(select(Role).where(Role.name == "customer")).first()
+        if customer_role:
+            _assign_primary_role(db, user, customer_role)
+            
+        # Check Fraud Risk
+        FraudService.calculate_risk_score(db, user.id)
+        
+    else:
+        # Update existing user info
+        if auth_data.provider == "google":
+            user.google_id = social_id
+        elif auth_data.provider == "apple":
+            user.apple_id = social_id
+            
+        if picture and not user.profile_picture:
+            user.profile_picture = picture
+            
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    # Update Last Login
+    user.last_login = datetime.now(UTC)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # 3. Generate Tokens & Response (Using same logic as Login)
+    
+    selected_role, user_roles, _ = _resolve_selected_role(db, user, None)
+    selected_role_name = canonical_role_name(selected_role.name)
+    if user.role_id != selected_role.id:
+        _assign_primary_role(db, user, selected_role)
+        
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=user.id, jti=token_jti)
+    session = AuthService.create_user_session(db, user.id, refresh_token, request, token_jti=token_jti)
+    sid = str(session.id) if session and session.id is not None else token_jti
+    access_token = create_access_token(subject=user.id, extra_claims={"sid": sid})
+    
+    permissions = AuthService.get_permissions_for_role(db, selected_role.id)
+    menu_data = AuthService.get_menu_for_role(db, selected_role.id)
+    
+    return LoginResponse(
+        success=True,
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=user.model_dump(exclude={"hashed_password"}),
+        role=selected_role_name,
+        available_roles=user_roles,
+        permissions=permissions,
+        menu=menu_data
+    )
+
+@router.post("/register/password", response_model=Token)
+async def register_with_password(
+    register_data: PasswordRegisterRequest,
+    request: Request,
+    db: Session = Depends(deps.get_db)
+):
+    # Determine the target (email or phone)
+    if not register_data.email and not register_data.phone_number:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or phone number is required"
+        )
+    
+    # Check if user already exists
+    if register_data.email:
+        statement = select(User).where(User.email == register_data.email)
+    else:
+        statement = select(User).where(User.phone_number == register_data.phone_number)
+    
+    user = db.exec(statement).first()
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email or phone number already exists"
+        )
+    
+    # Create new user
+    from app.core.security import get_password_hash
+    new_user = User(
+        email=register_data.email,
+        phone_number=register_data.phone_number,
+        full_name=register_data.full_name,
+        hashed_password=get_password_hash(register_data.password),
+        status=UserStatus.ACTIVE
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    # Assign default role (added missing logic)
+    customer_role = db.exec(select(Role).where(Role.name == "customer")).first()
+    if customer_role:
+        _assign_primary_role(db, new_user, customer_role)
+    
+    # Check Fraud Risk
+    FraudService.calculate_risk_score(db, new_user.id)
+    
+    # Audit log
+    AuditLogger.log_event(db, new_user.id, "USER_CREATION", "USER", resource_id=str(new_user.id), target_id=new_user.id)
+    
+    # Create refresh token + session first, then access token with stable SID.
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=new_user.id, jti=token_jti)
+    session = AuthService.create_user_session(
+        db,
+        new_user.id,
+        refresh_token,
+        request=request,
+        token_jti=token_jti,
+    )
+    sid = str(session.id) if session and session.id is not None else token_jti
+    access_token = create_access_token(subject=new_user.id, extra_claims={"sid": sid})
+    return Token(access_token=access_token, refresh_token=refresh_token, user=new_user)
+
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+@router.post("/refresh", response_model=Token)
+@limiter.limit("20/minute")
+async def refresh_token(
+    refresh_data: RefreshRequest,
+    request: Request,
+    db: Session = Depends(get_session)
+):
+    access_token, new_refresh_token, user = AuthService.rotate_refresh_session_tokens(
+        db=db,
+        refresh_token=refresh_data.refresh_token,
+        request=request,
+    )
+    return Token(access_token=access_token, refresh_token=new_refresh_token, user=user)
+
+@router.post("/logout", response_model=MessageResponse)
+async def logout(
+    current_user: User = Depends(deps.get_current_user),
+    token: str = Depends(deps.oauth2_scheme),
+    db: Session = Depends(deps.get_db)
+):
+    """Logout user - invalidate tokens and sessions"""
+    # 1. Revoke Session in AuthService
+    AuthService.revoke_session(db, token)
+    
+    # 2. Blacklist Token in TokenService
+    TokenService.blacklist_token(db, token)
+    
+    logger.info(f"User {current_user.id} logged out. Session revoked and token blacklisted.")
+    return MessageResponse(message="Logged out successfully")
+
+
+@router.post("/login", response_model=LoginResponse)
+@limiter.limit("10/minute")
+async def login(
+    login_data: LoginRequest,
+    request: Request,
+    x_app_scope: Optional[str] = Header(default=None, alias="X-App-Scope"),
+    db: Session = Depends(get_session)
+):
+    """
+    Login with password. Supports multi-role users.
+    """
+    from app.core.security import verify_password
+    
+    # 1. Find User (by email or phone) using normalized credential
+    credential = login_data.credential.strip()
+    if "@" in credential:
+        from sqlalchemy import func
+        statement = select(User).where(func.lower(User.email) == credential.lower()).options(selectinload(User.role))
+    else:
+        statement = select(User).where(User.phone_number == credential).options(selectinload(User.role))
+    
+    user = db.exec(statement).first()
+    
+    if not user:
+        # Audit: failed login (unknown user)
+        AuditLogger.log_event(
+            db,
+            None,
+            "FAILED_LOGIN",
+            "AUTH",
+            metadata={"credential": credential, "reason": "user_not_found"},
+        )
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+    if not verify_password(login_data.password, user.hashed_password):
+        AuditLogger.log_event(db, user.id, "FAILED_LOGIN", "AUTH", metadata={"reason": "invalid_password"})
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+    if user.status != UserStatus.ACTIVE:
+         AuditLogger.log_event(db, user.id, "FAILED_LOGIN", "AUTH", metadata={"reason": "inactive_account"})
+         raise HTTPException(status_code=403, detail="Account is inactive")
+
+    if not AuthService.verify_login_totp(db, user.id, login_data.totp_code):
+        AuditLogger.log_event(db, user.id, "FAILED_LOGIN", "AUTH", metadata={"reason": "invalid_or_missing_totp"})
+        raise HTTPException(status_code=400, detail="Two-factor authentication required or invalid code")
+
+    # 2. Determine active role from multi-role assignments.
+    app_scope = _resolve_request_app_scope(login_data.app_scope, x_app_scope)
+    selected_role, user_roles, requires_role_selection = _resolve_selected_role(
+        db,
+        user,
+        requested_role=login_data.role,
+        app_scope=app_scope,
+        require_explicit_scope_selection=True,
+    )
+    if requires_role_selection:
+        return LoginResponse(
+            success=False,
+            message="Please select a role to continue",
+            requires_role_selection=True,
+            available_roles=user_roles,
+            user=user.model_dump(exclude={"hashed_password"}),
+        )
+
+    assert selected_role is not None
+    selected_role_name = canonical_role_name(selected_role.name)
+    if user.role_id != selected_role.id:
+        _assign_primary_role(db, user, selected_role)
+            
+    # Update Last Login
+    user.last_login = datetime.now(UTC)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # 3. Generate Response for Selected Role
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=user.id, jti=token_jti)
+
+    # Create session first to get stable session.id for the access-token sid.
+    session = AuthService.create_user_session(db, user.id, refresh_token, request, token_jti=token_jti)
+    sid = str(session.id) if session and session.id else token_jti
+    access_token = create_access_token(subject=user.id, extra_claims={"sid": sid})
+
+    # Get Permissions & Menu from AuthService
+    permissions = AuthService.get_permissions_for_role(db, selected_role.id)
+    menu_data = AuthService.get_menu_for_role(db, selected_role.id)
+    
+    # Audit: successful login
+    AuditLogger.log_event(db, user.id, "LOGIN", "AUTH", metadata={"role": selected_role_name})
+    
+    return LoginResponse(
+        success=True,
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=user.model_dump(exclude={"hashed_password"}),
+        role=selected_role_name,
+        available_roles=user_roles,
+        permissions=permissions,
+        menu=menu_data
+    )
+
+@router.post("/select-role", response_model=LoginResponse)
+async def select_role(
+    role_data: RoleSelectRequest,
+    request: Request,
+    current_user: User = Depends(deps.get_current_user),
+    x_app_scope: Optional[str] = Header(default=None, alias="X-App-Scope"),
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Select/Switch active role for the current user.
+    """
+    app_scope = _resolve_request_app_scope(role_data.app_scope, x_app_scope)
+    selected_role, available_roles, _ = _resolve_selected_role(
+        db,
+        current_user,
+        requested_role=role_data.role,
+        app_scope=app_scope,
+        require_explicit_scope_selection=False,
+    )
+    selected_role_name = canonical_role_name(selected_role.name)
+    if current_user.role_id != selected_role.id:
+        _assign_primary_role(db, current_user, selected_role)
+
+    # 2. Generate new tokens
+    token_jti = str(uuid.uuid4())
+    refresh_token = create_refresh_token(subject=current_user.id, jti=token_jti)
+    session = AuthService.create_user_session(
+        db,
+        current_user.id,
+        refresh_token,
+        request=request,
+        token_jti=token_jti,
+    )
+    sid = str(session.id) if session and session.id is not None else token_jti
+    access_token = create_access_token(subject=current_user.id, extra_claims={"sid": sid})
+    
+    # 3. Get Permissions & Menu
+    permissions = AuthService.get_permissions_for_role(db, selected_role.id)
+    menu_data = AuthService.get_menu_for_role(db, selected_role.id)
+    
+    return LoginResponse(
+        success=True,
+        message=f"Switched to role: {selected_role_name}",
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=current_user.model_dump(exclude={"hashed_password"}),
+        role=selected_role_name,
+        available_roles=available_roles,
+        permissions=permissions,
+        menu=menu_data
+    )
+@router.post("/logout-all", response_model=LogoutAllResponse)
+async def logout_all(
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Invalidate ALL sessions for the current user.
+    Updates 'last_global_logout_at' timestamp. Any token issued before this time will be rejected.
+    """
+    revoked_count = AuthService.revoke_all_user_sessions(db, current_user.id)
+    logger.info(f"User {current_user.id} performed global logout")
+    return LogoutAllResponse(
+        message="Logged out from all devices successfully",
+        sessions_revoked=revoked_count,
+    )
+
+@router.post("/forgot-password", response_model=MessageResponse)
+@limiter.limit("5/hour")
+async def forgot_password(
+    request: Request,
+    forgot_in: ForgotPasswordRequest,
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Initiate password reset process.
+    Sends 6-digit OTP to registered email or phone.
+    OTP expires in 10 minutes.
+    """
+    user = None
+    target = None
+    channel = None
+    
+    # 1. Look up user
+    if forgot_in.email:
+        user = db.exec(select(User).where(User.email == forgot_in.email)).first()
+        target = forgot_in.email
+        channel = "email"
+    elif forgot_in.phone_number:
+        # Normalize phone if needed, but for now strict match
+        user = db.exec(select(User).where(User.phone_number == forgot_in.phone_number)).first()
+        target = forgot_in.phone_number
+        channel = "sms"
+        
+    if not user:
+        # Security: Do not reveal if user exists, just return success
+        return MessageResponse(message="If an account with these details exists, an OTP has been sent.")
+
+    if user.status != UserStatus.ACTIVE:
+         raise HTTPException(status_code=400, detail="User account is inactive.")
+
+    # 2. Generate OTP
+    code = OTPService.generate_otp(target)
+    
+    # 3. Create Record (10 mins validity)
+    try:
+        OTPService.create_otp_record(db, target, code, purpose="password_reset", validity_minutes=10)
+    except HTTPException as e:
+        raise e # Propagate rate limit errors
+
+    # 4. Send OTP
+    if channel == "email":
+        await OTPService.send_email_otp(target, code)
+    else:
+        await OTPService.send_sms_otp(target, code)
+
+    return MessageResponse(message=f"OTP sent to your registered {channel}. Valid for 10 minutes.")
+
+
+@router.post("/resend-otp", response_model=MessageResponse)
+@limiter.limit("5/hour")
+async def resend_otp(
+    request: Request,
+    otp_data: OTPRequest,
+    db: Session = Depends(deps.get_db)
+):
+    """Resend OTP for registration or verification"""
+    # Generate and send new OTP
+    code = OTPService.generate_otp(otp_data.target)
+    OTPService.create_otp_record(db, otp_data.target, code, otp_data.purpose)
+    
+    logger.info(f"OTP resent for {otp_data.target}")
+    if "@" in otp_data.target:
+        await OTPService.send_email_otp(otp_data.target, code)
+    else:
+        await OTPService.send_sms_otp(otp_data.target, code)
+    
+    return MessageResponse(message="OTP resent successfully")
+
+
+@router.post("/email/send-verification", response_model=EmailVerificationSendResponse)
+@router.post("/resend-verification", response_model=EmailVerificationSendResponse)
+async def send_email_verification(
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """
+    Send email verification link to user's email address.
+    """
+    import secrets
+    
+    if not current_user.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No email address associated with account"
+        )
+
+    existing_verified = db.exec(
+        select(UserEmailVerification)
+        .where(UserEmailVerification.user_id == current_user.id)
+        .where(UserEmailVerification.consumed_at.is_not(None))
+    ).first()
+    if existing_verified:
+        return EmailVerificationSendResponse(message="Email already verified", verified=True)
+
+    latest_pending = db.exec(
+        select(UserEmailVerification)
+        .where(UserEmailVerification.user_id == current_user.id)
+        .where(UserEmailVerification.consumed_at.is_(None))
+        .order_by(UserEmailVerification.created_at.desc())
+    ).first()
+
+    # Rate limit: only allow one email every 2 minutes
+    now_utc = utcnow()
+    last_sent = ensure_utc_aware(latest_pending.created_at) if latest_pending else None
+    if last_sent and (now_utc - last_sent).total_seconds() < 120:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Please wait 2 minutes before requesting another verification email"
+        )
+    
+    # Generate token
+    token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    verification = UserEmailVerification(
+        user_id=current_user.id,
+        token_hash=token_hash,
+        expires_at=now_utc + timedelta(hours=24),
+    )
+
+    db.add(verification)
+    db.commit()
+    
+    # Send email (mock for now)
+    verification_link = f"https://app.wezu.com/verify-email?token={token}"
+    logger.info("Verification email sent to %s", current_user.email)
+    # In production: await EmailService.send_verification_email(current_user.email, verification_link)
+    
+    return EmailVerificationSendResponse(message="Verification email sent")
+
+
+# --- NEW AUTH GAPS ENDPOINTS ---
+
+@router.post("/verify-email", response_model=EmailVerificationVerifyResponse)
+async def verify_email(
+    data: VerifyEmailRequest,
+    db: Session = Depends(deps.get_db)
+):
+    """Verify email verification token with 24h expiration"""
+    token_hash = hashlib.sha256(data.token.encode("utf-8")).hexdigest()
+    verification = db.exec(
+        select(UserEmailVerification).where(UserEmailVerification.token_hash == token_hash)
+    ).first()
+    if not verification:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Verification token is invalid"
+        )
+
+    if verification.consumed_at is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Verification token has already been used",
+        )
+
+    expires_at = ensure_utc_aware(verification.expires_at)
+    if expires_at is not None and expires_at < utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Verification token has expired",
+        )
+
+    user = db.get(User, verification.user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    verification.consumed_at = utcnow()
+    db.add(verification)
+    db.commit()
+    return EmailVerificationVerifyResponse(message="Email verified successfully", email=user.email)
+
+@router.post("/change-password", response_model=MessageResponse)
+async def change_password(
+    data: ChangePasswordRequest,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Change password for authenticated user"""
+    from app.core.security import verify_password, get_password_hash
+    
+    # Verify current password
+    if not verify_password(data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+    
+    # Update password
+    current_user.hashed_password = get_password_hash(data.new_password)
+    current_user.password_changed_at = datetime.now(UTC)
+
+    # merge() re-attaches a detached instance and returns the session-tracked copy;
+    # db.add() is redundant here and would be a no-op.
+    db.merge(current_user)
+    db.commit()
+    
+    # Revoke all sessions (Security Best Practice)
+    AuthService.revoke_all_user_sessions(db, current_user.id)
+    
+    logger.info(f"Password changed for user {current_user.id}")
+    return MessageResponse(message="Password changed successfully")
+
+
+class Verify2FARequest(BaseModel):
+    code: str
+
+@router.post("/enable-2fa", response_model=TwoFASetupResponse)
+async def enable_2fa_request(
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Initiate 2FA setup by generating secret and QR code"""
+    if AuthService.is_two_factor_enabled(db, current_user.id):
+        raise HTTPException(status_code=400, detail="2FA is already enabled")
+    
+    setup_data = AuthService.initiate_2fa_setup(db, current_user)
+    return setup_data
+
+@router.post("/verify-2fa", response_model=TwoFAVerifyResponse)
+async def verify_2fa_and_enable(
+    data: TwoFAVerifyRequest,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Verify first TOTP and permanently enable 2FA for user"""
+    backup_codes = AuthService.verify_and_enable_2fa(db, current_user, data.code)
+    if backup_codes:
+        return TwoFAVerifyResponse(
+            message="2FA enabled successfully",
+            backup_codes=backup_codes,
+        )
+    raise HTTPException(status_code=400, detail="Invalid TOTP code")
+
+@router.post("/2fa/disable", response_model=MessageResponse)
+async def disable_2fa(
+    data: TwoFADisableRequest,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Disable 2FA with password confirmation"""
+    if not verify_password(data.password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Invalid password")
+
+    AuthService.disable_two_factor(db, current_user)
+    return MessageResponse(message="2FA disabled successfully")
+
+@router.post("/biometric/register", response_model=MessageResponse)
+async def biometric_register(
+    data: BiometricRegisterRequest,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Biometric auth is disabled until cryptographic verification is implemented."""
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Biometric authentication is temporarily disabled for security hardening",
+    )
+
+@router.post("/biometric-login", response_model=MessageResponse)
+async def biometric_login(
+    data: BiometricLoginRequest,
+):
+    """Biometric auth is disabled until cryptographic verification is implemented."""
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Biometric authentication is temporarily disabled for security hardening",
+    )
+
+@router.get("/security-questions", response_model=List[SecurityQuestionResponse])
+async def list_security_questions(
+    db: Session = Depends(deps.get_db)
+):
+    """Fetch list of available security questions"""
+    return SecurityService.get_available_questions(db)
+
+@router.post("/security-questions/set", response_model=MessageResponse)
+async def set_security_question(
+    data: SetSecurityQuestionRequest,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db)
+):
+    """Set user's security question and answer"""
+    SecurityService.set_user_security_question(db, current_user.id, data.question_id, data.answer)
+    return MessageResponse(message="Security question set successfully")
+
+@router.post("/security-questions/verify", response_model=SecurityQuestionVerifyResponse)
+async def verify_security_question_route(
+    data: VerifySecurityQuestionRequest,
+    user_id: int, # Sent in body or query during recovery flow
+    db: Session = Depends(deps.get_db)
+):
+    """Verify security question during recovery"""
+    if SecurityService.verify_security_answer(db, user_id, data.answer):
+        return SecurityQuestionVerifyResponse(message="Verification successful", success=True)
+    raise HTTPException(status_code=400, detail="Incorrect answer")
+
+
+# ===== ADMIN LOGIN (JSON-based, for Admin Flutter App) =====
+
+class AdminLoginRequest(BaseModel):
+    username: str  # email
+    password: str
+    totp_code: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_username_aliases(cls, values: Any) -> Any:
+        if not isinstance(values, dict):
+            return values
+        username = values.get("username") or values.get("email") or values.get("credential")
+        if isinstance(username, str):
+            username = username.strip()
+        if username:
+            values["username"] = username
+        return values
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, value: str) -> str:
+        username = value.strip()
+        if not username:
+            raise ValueError("Username is required")
+        return username
+
+@router.post("/admin/login", response_model=AdminLoginResponse)
+@limiter.limit("10/minute")
+async def admin_login(
+    request: Request,
+    login_data: AdminLoginRequest,
+    db: Session = Depends(get_session)
+):
+    """
+    Admin login endpoint (JSON body).
+    Validates credentials and ensures the user has an admin-level role.
+    """
+    # Prefer index-friendly equality lookups before falling back to a
+    # case-insensitive scan for legacy mixed-case rows.
+    username_raw = login_data.username.strip()
+    username_clean = username_raw.lower()
+    base_statement = select(User).options(joinedload(User.role))
+
+    user = db.exec(base_statement.where(User.email == username_clean)).first()
+    if not user and username_raw != username_clean:
+        user = db.exec(base_statement.where(User.email == username_raw)).first()
+    if not user:
+        user = db.exec(
+            base_statement.where(func.lower(User.email) == username_clean)
+        ).first()
+
+    if not user:
+        logger.warning(f"Admin login - user not found: {login_data.username}")
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+
+    if not verify_password(login_data.password, user.hashed_password):
+        logger.warning(f"Admin login - invalid password for: {login_data.username}")
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+
+    if user.status != UserStatus.ACTIVE:
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    if not AuthService.verify_login_totp(db, user.id, login_data.totp_code):
+        raise HTTPException(status_code=400, detail="Two-factor authentication required or invalid code")
+
+    # Verify user has admin-level role.
+    from app.models.user import UserType
+    admin_types = [UserType.ADMIN] if hasattr(UserType, 'ADMIN') else []
+    role_name = user.role.name.strip().lower() if user.role and user.role.name else None
+    is_admin = bool(user.is_superuser)
+
+    if hasattr(user, 'user_type') and user.user_type in admin_types:
+        is_admin = True
+
+    if role_name in ("admin", "super_admin", "superadmin"):
+        is_admin = True
+
+    # Rare fallback when the role relationship is missing but role_id exists.
+    if not is_admin and hasattr(user, 'role_id') and user.role_id is not None:
+        from app.models.rbac import Role
+        role = db.get(Role, user.role_id)
+        if role and role.name and role.name.strip().lower() in ("admin", "super_admin", "superadmin"):
+            is_admin = True
+
+    if not is_admin:
+        logger.warning(f"Admin login - non-admin user attempted: {login_data.username}")
+        raise HTTPException(status_code=403, detail="User does not have admin privileges")
+
+    token_jti = str(uuid.uuid4())
+    refresh_tok = create_refresh_token(subject=user.id, jti=token_jti)
+
+    # Persist last login alongside the new session in the same commit.
+    user.last_login = datetime.now(UTC)
+    db.add(user)
+
+    # Create session first so we can use its stable DB id as the access-token
+    # sid claim.  This means token rotations never break inflight access tokens.
+    session = AuthService.create_user_session(
+        db,
+        user.id,
+        refresh_tok,
+        request=request,
+        token_jti=token_jti,
+        user_agent="Admin Web"
+    )
+
+    sid = str(session.id) if session and session.id else token_jti
+    access_token = create_access_token(subject=user.id, extra_claims={"sid": sid})
+
+    logger.info(f"Admin login successful for user ID: {user.id}")
+    return AdminLoginResponse(
+        access_token=access_token,
+        token_type="bearer",
+        refresh_token=refresh_tok,
+        user=AdminLoginUser(
+            id=user.id,
+            email=user.email,
+            full_name=user.full_name,
+        ),
+    )

@@ -1,0 +1,16 @@
+services:
+  db:
+    image: timescale/timescaledb:latest-pg15
+    container_name: wezu_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: wezy_user
+      POSTGRES_PASSWORD: WezySecure123!
+      POSTGRES_DB: wezy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
